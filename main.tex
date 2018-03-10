@@ -49,7 +49,7 @@
 
 \includegraphics[scale=0.1]{raft}
 
-This paper cover Raft, a consensus algorithm for distributed systems.
+This paper covers Raft, a consensus algorithm for distributed systems.
 
 Raft wants to be a simpler replacement for PAXOS, an algorithm developed by Leslie Lamport and considered the reference consensus algorithm for distributed systems[CN]. PAXOS suffers from two big problems, which Raft tries to solve: It is very hard to understand [CN] and it has some missing pieces to actually implement a real world system using PAXOS [CN (Chubby?)].
 
@@ -64,9 +64,21 @@ This paper has four parts: The first part explains what consensus in a distribut
 Discuss the consensus problem for distributed systems.
 Consensus: getting a number of machines to agree on a specific value or outcome.
 
+Problem: Hosts and networks can stop working, be slow or have other failures.
+
 \section {The Raft algorithm}
 
 \subsection{The CAP Theorem}
+
+The CAP theorem describe how certain failures in a distributed system affects the system. It states that a distributed system can never provide more than two of the following guarantees:
+
+\begin{itemize}
+    \item Consistency: TODO
+    \item Availability: TODO
+    \item Partition tolerance: TODO
+\end{itemize}
+
+Raft is a CP algorithm, that means systems using this algorithm are tolerant to partitions and always provide consistency by sacrificing availability. 
 
 \subsection{The algorithm}
 
