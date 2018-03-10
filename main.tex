@@ -1,0 +1,119 @@
+\input{style.tex}
+
+\begin{document}
+
+%%
+%% begin titlepage
+%%
+
+\begin{titlepage}
+\newgeometry{left=6cm}
+\definecolor{titlepage-color}{HTML}{2196F3}
+\newpagecolor{titlepage-color}\afterpage{\restorepagecolor}
+\newcommand{\colorRule}[3][black]{\textcolor[HTML]{#1}{\rule{#2}{#3}}}
+\begin{flushleft}
+\noindent
+\\[-1em]
+\color[HTML]{FFFFFF}
+\makebox[0pt][l]{\colorRule[1976D2]{1.3\textwidth}{8pt}}
+\par
+\noindent
+
+{ \setstretch{1.4}
+\vfill
+\noindent {\huge \textbf{\textsf{The Raft Consensus Algorithm}}}
+\vskip 2em
+\noindent
+{\Large \textsf{\MakeUppercase{Fabio Anderegg}}
+\vfill
+}
+
+\textsf{2017-12-04}}
+\end{flushleft}
+\end{titlepage}
+\restoregeometry
+
+%%
+%% end titlepage
+%%
+
+
+{
+\hypersetup{linkcolor=}
+\setcounter{tocdepth}{2}
+\tableofcontents
+\pagebreak
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Overview}\label{overview}
+
+\includegraphics[scale=0.1]{raft}
+
+This document describes the deployment of a modern web application on
+the Google Kubernetes Engine (GKE) with Kubernetes Helm.
+
+The web project to be deployed contains two main components:
+
+\begin{itemize}
+\tightlist
+\item
+  JavaScript Single Page app using the framework Vue.js
+\item
+  JavaScript REST API backend written for Node.js
+\end{itemize}
+
+The app itself is a very simple todo list app implementing the TodoMVC
+example app with the framework Vue.js. The implementation is based on
+the TodoMVC implementation for Vuex\footnote{\url{https://github.com/vuejs/vuex/tree/dev/examples/todomvc}}.
+
+The GitHub repository for the adapted version can be found here:
+\url{https://github.com/fotcorn/todo-client-vuejs}
+
+The backend provides a HTTP REST API. It is also written in JavaScript
+for the Node.js runtime. It uses express.js as HTTP framework and pq to
+access the PostgreSQL database.
+
+GitHub repository for the backend:
+\url{https://github.com/fotcorn/todo-backend-express}
+
+The source code for the Helm charts discussed here can be found here:
+\url{https://github.com/fotcorn/todo-kubernetes-helm}
+
+\section{Technologies}\label{technologies}
+
+\subsection{Docker}\label{docker}
+
+Docker is a container runtime for Linux. It is an operating system level
+virtualization technology, which allows to run software isolated from
+each other. Docker provides the runtime to run a container on a single
+machine and a mechanism to generate images which can be run on Docker
+\footnote{\url{https://docs.docker.com/engine/docker-overview/}}.
+
+\subsection{Kubernetes}\label{kubernetes}
+
+Kubernetes is a container orchestration software developed by Google. A
+container orchestration software is required to deploy and run
+containers on multiple hosts and to allow these containers to exchange
+data over the network. Kubernetes can be run standalone or inside a
+bigger software package like OpenShift or Cloud Foundry. There are also
+hosted Kubernetes solutions like Google Kubernetes Engine (GKE), Azure
+Container Service or OpenShift dedicated\footnote{\url{https://kubernetes.io/docs/setup/pick-right-solution/\#hosted-solutions}}.
+
+\end{document}
