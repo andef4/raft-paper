@@ -45,7 +45,7 @@
 \pagebreak
 }
 
-\section{Overview}\label{overview}
+\section{Introduction}
 
 \includegraphics[scale=0.1]{raft}
 
@@ -59,24 +59,29 @@ The offical GitHub Page [https://raft.github.io/] contains many further referenc
 
 This paper has four parts: The first part explains what consensus in a distributed system is and how it is used, the second part explains how the Raft algorithm works, the third part shows how Raft handles some failure modes. To validate the claim that Raft is easy to implement, the author of this paper tried to implement a simple key/value store using Raft, which is described in the fourth part.
 
-\section{Technologies}\label{technologies}
+\section{What is consensus?}
 
-\subsection{Docker}\label{docker}
+Discuss the consensus problem for distributed systems.
+Consensus: getting a number of machines to agree on a specific value or outcome.
 
-Docker is a container runtime for Linux. It is an operating system level
-virtualization technology, which allows to run software isolated from
-each other. Docker provides the runtime to run a container on a single
-machine and a mechanism to generate images which can be run on Docker
-\footnote{\url{https://docs.docker.com/engine/docker-overview/}}.
+\section {The Raft algorithm}
 
-\subsection{Kubernetes}\label{kubernetes}
+\subsection{The CAP Theorem}
 
-Kubernetes is a container orchestration software developed by Google. A
-container orchestration software is required to deploy and run
-containers on multiple hosts and to allow these containers to exchange
-data over the network. Kubernetes can be run standalone or inside a
-bigger software package like OpenShift or Cloud Foundry. There are also
-hosted Kubernetes solutions like Google Kubernetes Engine (GKE), Azure
-Container Service or OpenShift dedicated\footnote{\url{https://kubernetes.io/docs/setup/pick-right-solution/\#hosted-solutions}}.
+\subsection{The algorithm}
+
+\subsubsection{Leader election}
+
+\subsubsection{Data insertation}
+
+\subsection{Failure modes}
+
+\subsubsection{Master crash}
+
+\subsubsection{Delayed packages}
+
+\subsubsection{Network partition}
+
+\section {Implementation}
 
 \end{document}
