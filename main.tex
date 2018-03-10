@@ -66,35 +66,15 @@
 
 \includegraphics[scale=0.1]{raft}
 
-This document describes the deployment of a modern web application on
-the Google Kubernetes Engine (GKE) with Kubernetes Helm.
+This paper cover Raft, a consensus algorithm for distributed systems.
 
-The web project to be deployed contains two main components:
+Raft wants to be a simpler replacement for PAXOS, an algorithm developed by Leslie Lamport and considered the reference consensus algorithm for distributed systems[CN]. PAXOS suffers from two big problems, which Raft tries to solve: It is very hard to understand [CN] and it has some missing pieces to actually implement a real world system using PAXOS [CN (Chubby?)].
 
-\begin{itemize}
-\tightlist
-\item
-  JavaScript Single Page app using the framework Vue.js
-\item
-  JavaScript REST API backend written for Node.js
-\end{itemize}
+Raft was developed by Diego Ongaro and extensivly described in this PhD thesis [CN]. He not only describes how the algorithm works, bot also describes a study under students to test if the algorithm is actually easier to understand than PAXOS. Raft has been formally verified to be correct [CN] and implemented in multiple real world systems, e.g. in etcd [CN], Consul [CN] and RethinkDB [CN].
 
-The app itself is a very simple todo list app implementing the TodoMVC
-example app with the framework Vue.js. The implementation is based on
-the TodoMVC implementation for Vuex\footnote{\url{https://github.com/vuejs/vuex/tree/dev/examples/todomvc}}.
+The offical GitHub Page [https://raft.github.io/] contains many further references about the algorithm, a simulator for the algorithm from which screenshots have been used in this paper and an extensive list of implementations in many different programming languages.
 
-The GitHub repository for the adapted version can be found here:
-\url{https://github.com/fotcorn/todo-client-vuejs}
-
-The backend provides a HTTP REST API. It is also written in JavaScript
-for the Node.js runtime. It uses express.js as HTTP framework and pq to
-access the PostgreSQL database.
-
-GitHub repository for the backend:
-\url{https://github.com/fotcorn/todo-backend-express}
-
-The source code for the Helm charts discussed here can be found here:
-\url{https://github.com/fotcorn/todo-kubernetes-helm}
+This paper has four parts: The first part explains what consensus in a distributed system is and how it is used, the second part explains how the Raft algorithm works, the third part shows how Raft handles some failure modes. To validate the claim that Raft is easy to implement, the author of this paper tried to implement a simple key/value store using Raft, which is described in the fourth part.
 
 \section{Technologies}\label{technologies}
 
