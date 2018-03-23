@@ -82,18 +82,46 @@ Raft is a CP algorithm, that means systems using this algorithm are tolerant to 
 
 \subsection{The algorithm}
 
+\subsubsection{RPC}
+2 Messages with 2 Answers
+
+\subsubsection{State}
+
+\subsection{Scenarios}
+This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
+
 \subsubsection{Leader election}
 
-\subsubsection{Data insertation}
+\subsubsection{Heartbeat}
 
-\subsection{Failure modes}
+\subsubsection{Data write}
+Writing data into the cluster uses the same message as the heartbeat.
+
 
 \subsubsection{Master crash}
+A master crash is handled like the initial leader election, the election timeout runs out on one of the servers, the server ...
 
 \subsubsection{Delayed packages}
+=> Wait until enough packages arrive, this is a CP algorithm after all
 
 \subsubsection{Network partition}
 
+\subsubsection{Old follower returns}
+
+\subsubsection{Old master returns}
+
+\subsubsection{Switching masters in network partition}
+When connection between two nodes fail, a ping-pong between these two nodes *can* happen.
+
+\subsubsection{Inconsistens reads}
+https://github.com/coreos/etcd/issues/741
+
 \section {Implementation}
+
+
+
+* C++
+* Boost library
+* Protobuf
 
 \end{document}
