@@ -81,11 +81,19 @@ The CAP theorem describe how certain failures in a distributed system affects th
 Raft is a CP algorithm, that means systems using this algorithm are tolerant to partitions and always provide consistency by sacrificing availability. 
 
 \subsection{The algorithm}
+This is the general overview what state and messages the Raft algorithm uses. Examples how these things play together are given in the next chapter.
+
+\subsubsection{State}
+current term
+current index
+
+if master:
+  bla
+
 
 \subsubsection{RPC}
 2 Messages with 2 Answers
 
-\subsubsection{State}
 
 \subsection{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
@@ -108,7 +116,10 @@ A master crash is handled like the initial leader election, the election timeout
 
 \subsubsection{Old follower returns}
 
+
 \subsubsection{Old master returns}
+=> Steps down as soon as they see a heartbeat packet from the current master with a newer term.
+The node is a follower now and does the same as in the section above to regain all the missing data.
 
 \subsubsection{Switching masters in network partition}
 When connection between two nodes fail, a ping-pong between these two nodes *can* happen.
@@ -117,8 +128,6 @@ When connection between two nodes fail, a ping-pong between these two nodes *can
 https://github.com/coreos/etcd/issues/741
 
 \section {Implementation}
-
-
 
 * C++
 * Boost library
