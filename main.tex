@@ -53,22 +53,18 @@ This paper covers Raft, a consensus algorithm for distributed systems.
 
 Raft wants to be a simpler replacement for PAXOS, an algorithm developed by Leslie Lamport and considered the reference consensus algorithm for distributed systems[CN]. PAXOS suffers from two big problems, which Raft tries to solve: It is very hard to understand [CN] and it has some missing pieces to actually implement a real world system using PAXOS [CN (Chubby?)].
 
-Raft was developed by Diego Ongaro and extensivly described in this PhD thesis [CN]. He not only describes how the algorithm works, bot also describes a study under students to test if the algorithm is actually easier to understand than PAXOS. Raft has been formally verified to be correct [CN] and implemented in multiple real world systems, e.g. in etcd [CN], Consul [CN] and RethinkDB [CN].
+Raft was developed by Diego Ongaro and extensively described in this PhD thesis [CN]. He not only describes how the algorithm works, but also did a study under students to test if the algorithm is actually easier to understand than PAXOS. Raft has been formally verified to be correct [CN] and implemented in multiple real world systems, e.g. in etcd [CN], Consul [CN] and RethinkDB [CN].
 
 The offical GitHub Page [https://raft.github.io/] contains many further references about the algorithm, a simulator for the algorithm from which screenshots have been used in this paper and an extensive list of implementations in many different programming languages.
 
 This paper has four parts: The first part explains what consensus in a distributed system is and how it is used, the second part explains how the Raft algorithm works, the third part shows how Raft handles some failure modes. To validate the claim that Raft is easy to implement, the author of this paper tried to implement a simple key/value store using Raft, which is described in the fourth part.
 
-\section{What is consensus?}
+\subsection{What is consensus?}
 
 Discuss the consensus problem for distributed systems.
 Consensus: getting a number of machines to agree on a specific value or outcome.
 
 Problem: Hosts and networks can stop working, be slow or have other failures.
-
-\section {The Raft algorithm}
-
-Introduction...
 
 \subsection{The CAP Theorem}
 
@@ -82,58 +78,62 @@ The CAP theorem describe how certain failures in a distributed system affects th
 
 Raft is a CP algorithm, that means systems using this algorithm are tolerant to partitions and always provide consistency by sacrificing availability. 
 
-\subsection{The algorithm}
+\section{The algorithm}
 This is the general overview what state and messages the Raft algorithm uses. Examples how these things play together are given in the next chapter.
 
-\subsubsection{State}
+\subsection{State}
 current term
 current index
 
-\subsubsection{RPC}
+\subsection{RPC}
+
 2 Messages with 2 Answers
 
-\subsubsection{Cheat sheet}
+\subsection{Cheat sheet}
 Like in the original raft paper, but with much more information (flow-diagram or pseudo code)
 
 
-\subsection{Scenarios}
+\section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
 
-\subsubsection{Leader election}
+\subsection{Leader election}
 
-\subsubsection{Heartbeat}
+\subsection{Heartbeat}
 
-\subsubsection{Data write}
+\subsection{Data write}
 Writing data into the cluster uses the same message as the heartbeat.
 
 
-\subsubsection{Master crash}
+\subsection{Master crash}
 A master crash is handled like the initial leader election, the election timeout runs out on one of the servers, the server ...
 
-\subsubsection{Delayed packages}
+\subsection{Delayed packages}
 => Wait until enough packages arrive, this is a CP algorithm after all
 
-\subsubsection{Network partition}
+\subsection{Network partition}
 
-\subsubsection{Old follower returns}
+\subsection{Old follower returns}
 
 
-\subsubsection{Old master returns}
+\subsection{Old master returns}
 => Steps down as soon as they see a heartbeat packet from the current master with a newer term.
 The node is a follower now and does the same as in the section above to regain all the missing data.
 
-\subsubsection{Switching masters in network partition}
+\subsection{Switching masters in network partition}
 When connection between two nodes fail, a ping-pong between these two nodes *can* happen.
 
-\subsubsection{Inconsistens reads}
+\subsection{Inconsistens reads}
 https://github.com/coreos/etcd/issues/741
 
 \section {Implementation}
 
-https://github.com/fotcorn/raft
+The author of this paper implemented the algorithm to check the premise of a simple and easy to implement consensus algorithm. The implemented solution is a very simple key-value store, as described in the raft paper. The implementation is written in C++ and uses the Boost library for network communication and other utility functions, Protobuf to serialize the network packages between the node and the client and cereal to decode the json config file for each node.
 
-* C++
-* Boost library
-* Protobuf
+The code is available on GitHub and uses the MIT license: https://github.com/fotcorn/raft
+
+\subsection{Learnings}
+
+\subsection{Additions}
+
 
 \end{document}
