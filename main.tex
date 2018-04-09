@@ -40,7 +40,7 @@
 
 {
 \hypersetup{linkcolor=}
-\setcounter{tocdepth}{2}
+\setcounter{tocdepth}{3}
 \tableofcontents
 \pagebreak
 }
@@ -68,6 +68,8 @@ Problem: Hosts and networks can stop working, be slow or have other failures.
 
 \section {The Raft algorithm}
 
+Introduction...
+
 \subsection{The CAP Theorem}
 
 The CAP theorem describe how certain failures in a distributed system affects the system. It states that a distributed system can never provide more than two of the following guarantees:
@@ -87,12 +89,11 @@ This is the general overview what state and messages the Raft algorithm uses. Ex
 current term
 current index
 
-if master:
-  bla
-
-
 \subsubsection{RPC}
 2 Messages with 2 Answers
+
+\subsubsection{Cheat sheet}
+Like in the original raft paper, but with much more information (flow-diagram or pseudo code)
 
 
 \subsection{Scenarios}
@@ -128,6 +129,8 @@ When connection between two nodes fail, a ping-pong between these two nodes *can
 https://github.com/coreos/etcd/issues/741
 
 \section {Implementation}
+
+https://github.com/fotcorn/raft
 
 * C++
 * Boost library
