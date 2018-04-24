@@ -92,6 +92,7 @@ Raft is a CP algorithm, that means systems using this algorithm are tolerant to 
 This is the general overview what state and messages the Raft algorithm uses. Examples how these things play together are given in the next chapter.
 
 \subsection{State}
+Every node in the Raft cl
 current term
 current index
 
@@ -99,8 +100,7 @@ current index
 
 2 Messages with 2 Answers
 
-\subsection{Cheat sheet}
-Like in the original raft paper, but with much more information (flow-diagram or pseudo code)
+\subsection{Timers}
 
 Distributed state diagram
 
@@ -133,8 +133,13 @@ The node is a follower now and does the same as in the section above to regain a
 \subsection{Switching masters in network partition}
 When connection between two nodes fail, a ping-pong between these two nodes *can* happen.
 
+http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
+
 \subsection{Inconsistens reads}
 https://github.com/coreos/etcd/issues/741
+
+\subsection{Cheat sheet}
+Like in the original raft paper, but with much more information (flow-diagram or pseudo code)
 
 \section {Implementation}
 
