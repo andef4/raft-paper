@@ -89,12 +89,29 @@ The CAP theorem describe how certain failures in a distributed system affects th
 Raft is a CP algorithm, that means systems using this algorithm are tolerant to partitions and always provide consistency by sacrificing availability. 
 
 \section{The algorithm}
-This is the general overview what state and messages the Raft algorithm uses. Examples how these things play together are given in the next chapter.
+A Raft cluster consists of nodes. A node is a server running the Raft software and communicating with the other nodes in the cluster over a network connection.
+In every cluster, one node is elected as a leader node, which coordinates the operations inside the cluster. A leader can only be elected by
+a majority of the cluster nodes. This means the minimal cluster size is three nodes, and bigger clusters should always have an uneven count of nodes (In a cluster
+of six nodes, two nodes can crash and a majority can still be found, this is not better than a five node cluster).
+This also means that when more than half of the cluster nodes are offline, the cluster is inoperable. This is availability guarantee of the CAP theorem the Raft algorithm gives up
+for the other two guarantees. 
+
+* has a log with data
+
+The Raft algorithm is designed to survive the following and many other failure cases:
+item\begin{itemize}
+    \item The current leader crashes
+    \item Network connections between nodes fail
+    \item Network connections are very slow or drop messages between nodes
+\end{itemize}
 
 \subsection{State}
-Every node in the Raft cl
-current term
-current index
+Every node in the Raft cluster is always in one of the following three states:
+\begin{itemize}
+    \item Leader: The node is the leader of the cluster
+    \item Candidate: The node did not find a leader, it is waiting to get enough votes to be a leader itself
+    \item Follower: Some other node is a leader
+\end{itemize}
 
 \subsection{RPC}
 
