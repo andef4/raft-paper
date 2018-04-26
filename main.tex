@@ -99,7 +99,7 @@ for the other two guarantees.
 * has a log with data
 
 The Raft algorithm is designed to survive the following and many other failure cases:
-item\begin{itemize}
+\begin{itemize}
     \item The current leader crashes
     \item Network connections between nodes fail
     \item Network connections are very slow or drop messages between nodes
@@ -113,9 +113,42 @@ Every node in the Raft cluster is always in one of the following three states:
     \item Follower: Some other node is a leader
 \end{itemize}
 
+\textbf{Persistent data written to disk.}
+
+This data has to be saved on disk before replying to the RPC call from the leader. The fsync or equivalent system call should be used on the file descriptor to make sure the data has arrived on the disk and not just the write caches of the operating system [CN].
+
+\begin{tabular}{ | l | p{'15cm'} | }
+\hline
+currentTerm & The election term the node thinks is current \\ \hline
+votedFor & bla \\ \hline
+log[] & The actual saved data, first index is one, contains data and the term when the data was received from the master \\ \hline
+\end{tabular}
+
+\textbf{Volatile data}
+
+This data is not written to disk and initialized on node startup
+TODO: how?
+TODO: add table
+
+\textbf{Leader data}
+
+This data is initialized when the node gets elected as leader and is not persisted to disk.
+It has to be cleared every time the node gets elected and must not be reused in later terms (TODO: correct?).
+
+TODO: table
+
 \subsection{RPC}
 
-2 Messages with 2 Answers
+two way rpc
+important to always send messages/reconnect/retry, even when node was down
+
+\textbf{RequestVote}
+
+\textbf{RequestVote Response}
+
+\textbf{AppendEntries}
+
+\textbf{AppendEntries Response}
 
 \subsection{Timers}
 
