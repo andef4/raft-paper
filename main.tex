@@ -113,7 +113,7 @@ Every node in the Raft cluster is always in one of the following three states:
     \item Follower: Some other node is a leader
 \end{itemize}
 
-\textbf{Persistent data written to disk.}
+\textbf{Persistent data written to disk}
 
 This data has to be saved on disk before replying to the RPC call from the leader. The fsync or equivalent system call should be used on the file descriptor to make sure the data has arrived on the disk and not just the write caches of the operating system [CN].
 
@@ -137,6 +137,13 @@ It has to be cleared every time the node gets elected and must not be reused in 
 
 TODO: table
 
+
+\subsection{Timers}
+
+\subsubsection*{Election timer}
+
+\subsubsection*{Election timer}
+
 \subsection{RPC}
 
 two way rpc
@@ -149,10 +156,6 @@ important to always send messages/reconnect/retry, even when node was down
 \textbf{AppendEntries}
 
 \textbf{AppendEntries Response}
-
-\subsection{Timers}
-
-Distributed state diagram
 
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
@@ -188,8 +191,11 @@ http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
 \subsection{Inconsistens reads}
 https://github.com/coreos/etcd/issues/741
 
-\subsection{Cheat sheet}
+\section{Formal definition}
 Like in the original raft paper, but with much more information (flow-diagram or pseudo code)
+
+
+
 
 \section {Implementation}
 
