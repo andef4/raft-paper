@@ -46,13 +46,14 @@
 }
 
 \section{Abstract}
-What is in this paper?
-\begin{itemize}
-    \item What is consensus?
-    \item Describtion of the algorithm
-    \item how the algorithm behaves (and sometimes fails) in specific scenarios
-    \item short description of my implementation of raft
-\end{itemize}
+
+Raft is a consensus algorithm for distributed systems similar, but much simpler to understand and implement than Paxos.
+This paper explains the algorithm from the bottom up, first describing all the components and
+then explaining how they work together to solve specific scenarios.
+Two scenarios describe situations where the algorithm does not work optimally and even returns stale data.
+There are some proposed extensions to Raft which are useful when implementing a real world distributed system
+which are examined in the paper. Finally, the author wrote an implementation of the Raft algorithm
+and provides some comment where the difficulties lie when implementing the algorithm.
 
 \section{Introduction}
 
@@ -69,12 +70,29 @@ The offical GitHub Page [https://raft.github.io/] contains many further referenc
 TODO: rework
 This paper has four parts: The first part explains what consensus in a distributed system is and how it is used, the second part explains how the Raft algorithm works, the third part shows how Raft handles some failure modes. To validate the claim that Raft is easy to implement, the author of this paper tried to implement a simple key/value store using Raft, which is described in the fourth part.
 
+This paper describes the latest version of Raft as described in Diego Ongaros PhD dissertation. Compared to the papers published before the dissertation, the dissertation describes the client-cluster interaction much more clearly and contains a simpler cluster membership change algorithm.
+
 \subsection{What is consensus?}
+
+
+
+
+
+
+
+
+
 
 Discuss the consensus problem for distributed systems.
 Consensus: getting a number of machines to agree on a specific value or outcome.
 
 Problem: Hosts and networks can stop working, be slow or have other failures.
+
+
+
+
+
+
 
 \subsection{The CAP Theorem}
 
@@ -142,7 +160,8 @@ TODO: table
 
 \subsubsection*{Election timer}
 
-\subsubsection*{Election timer}
+\subsubsection*{Hearbeat timer}
+timer on the leader to send out heartbeat messages
 
 \subsection{RPC}
 
@@ -188,14 +207,11 @@ When connection between two nodes fail, a ping-pong between these two nodes *can
 
 http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
 
+\section{Cluster membership}
+
+\section{Client interaction}
 \subsection{Inconsistens reads}
 https://github.com/coreos/etcd/issues/741
-
-\section{Formal definition}
-Like in the original raft paper, but with much more information (flow-diagram or pseudo code)
-
-
-
 
 \section {Implementation}
 
@@ -205,10 +221,7 @@ The code is available on GitHub and uses the MIT license: https://github.com/fot
 
 \subsection{Learnings}
 
-\subsection{Additions}
-Client?
-
 \section{Conclusion}
-Refernces the abstract
+References the abstract
 
 \end{document}
