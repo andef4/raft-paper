@@ -106,6 +106,8 @@ The CAP theorem describe how certain failures in a distributed system affects th
 
 Raft is a CP algorithm, that means systems using this algorithm are tolerant to partitions and always provide consistency by sacrificing availability. 
 
+strongly-consistent
+
 \section{The algorithm}
 A Raft cluster consists of nodes. A node is a server running the Raft software and communicating with the other nodes in the cluster over a network connection.
 In every cluster, one node is elected as a leader node, which coordinates the operations inside the cluster. A leader can only be elected by
@@ -210,8 +212,17 @@ http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
 \section{Cluster membership}
 
 \section{Client interaction}
-\subsection{Inconsistens reads}
+
+* duplicate writes
+
+
+
+\subsection{Inconsistens/stale reads}
+(adressed in paper)
 https://github.com/coreos/etcd/issues/741
+
+https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
+https://gist.github.com/armon/11059431
 
 \section {Implementation}
 
