@@ -47,13 +47,10 @@
 
 \section{Abstract}
 
-Raft is a consensus algorithm for distributed systems similar, but much simpler to understand and implement than Paxos.
+Raft is a consensus algorithm for distributed systems comparable, but much simpler to understand and implement than Paxos.
 This paper explains the algorithm from the bottom up, first describing all the components and
 then explaining how they work together to solve specific scenarios.
-Two scenarios describe situations where the algorithm does not work optimally and even returns stale data.
-There are some proposed extensions to Raft which are useful when implementing a real world distributed system
-which are examined in the paper. Finally, the author wrote an implementation of the Raft algorithm
-and provides some comment where the difficulties lie when implementing the algorithm.
+There are some proposed extensions to Raft which are useful when implementing a real world distributed system which are examined in the paper. Finally, the author wrote an implementation of the Raft algorithm and provides some comment where the difficulties lie when implementing the algorithm.
 
 \section{Introduction}
 
@@ -75,23 +72,10 @@ This paper describes the latest version of Raft as described in Diego Ongaros Ph
 \subsection{What is consensus?}
 
 
-
-
-
-
-
-
-
-
 Discuss the consensus problem for distributed systems.
 Consensus: getting a number of machines to agree on a specific value or outcome.
 
 Problem: Hosts and networks can stop working, be slow or have other failures.
-
-
-
-
-
 
 
 \subsection{The CAP Theorem}
@@ -133,7 +117,7 @@ Every node in the Raft cluster is always in one of the following three states:
     \item Follower: Some other node is a leader
 \end{itemize}
 
-\textbf{Persistent data written to disk}
+\subsubsection*{Persistent data written to disk}
 
 This data has to be saved on disk before replying to the RPC call from the leader. The fsync or equivalent system call should be used on the file descriptor to make sure the data has arrived on the disk and not just the write caches of the operating system [CN].
 
@@ -144,13 +128,13 @@ votedFor & bla \\ \hline
 log[] & The actual saved data, first index is one, contains data and the term when the data was received from the master \\ \hline
 \end{tabular}
 
-\textbf{Volatile data}
+\subsubsection*{Volatile data}
 
 This data is not written to disk and initialized on node startup
 TODO: how?
 TODO: add table
 
-\textbf{Leader data}
+\subsubsection*{Leader data}
 
 This data is initialized when the node gets elected as leader and is not persisted to disk.
 It has to be cleared every time the node gets elected and must not be reused in later terms (TODO: correct?).
