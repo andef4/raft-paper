@@ -103,6 +103,8 @@ of six nodes, two nodes can crash and a majority can still be found, this is not
 This also means that when more than half of the cluster nodes are offline, the cluster is inoperable. This is availability guarantee of the CAP theorem the Raft algorithm gives up
 for the other two guarantees. 
 
+The current leader sends out a heartbeat network packet in some preconfigured interval. If a follower node does not receive a heartbeat within a given interval (which should be a bit longer than the interval in which the master sends out the heartbeats to account for the network roundtrip time), the node considers the master to be down an proposes ifself as a new leader.
+
 * has a log with data
 
 The Raft algorithm is designed to survive the following and many other failure cases:
@@ -116,7 +118,7 @@ The Raft algorithm is designed to survive the following and many other failure c
 Every node in the Raft cluster is always in one of the following three states:
 \begin{itemize}
     \item Leader: The node is the leader of the cluster
-    \item Candidate: The node did not find a leader, it is waiting to get enough votes to be a leader itself
+    \item Candidate: The node did not receive a heartbeat from a leader, it is waiting to get enough votes to be a leader itself
     \item Follower: Some other node is a leader
 \end{itemize}
 
@@ -126,8 +128,8 @@ This data has to be saved on disk before replying to the RPC call from the leade
 
 \begin{tabular}{ | l | p{'15cm'} | }
 \hline
-currentTerm & The election term the node thinks is current \\ \hline
-votedFor & bla \\ \hline
+currentTerm & The election term the node thinks is the current one \\ \hline
+votedFor & For which node the current node has voted in this term \\ \hline
 log[] & The actual saved data, first index is one, contains data and the term when the data was received from the master \\ \hline
 \end{tabular}
 
@@ -146,8 +148,10 @@ TODO: table
 
 
 \subsection{Timers}
+The Raft server needs two timers which when they run out trigger some action.
 
 \subsubsection*{Election timer}
+
 
 \subsubsection*{Hearbeat timer}
 timer on the leader to send out heartbeat messages
