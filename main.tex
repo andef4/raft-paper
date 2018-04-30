@@ -71,22 +71,30 @@ This paper describes the latest version of Raft as described in Diego Ongaros Ph
 
 \subsection{What is consensus?}
 
+Consensus in a distributed system means that multiple servers agree on the same specific state of the system. After agreeing on a state, that state cannot be changed any more, but the system can agree on a new state superseding the old state.
 
-Discuss the consensus problem for distributed systems.
-Consensus: getting a number of machines to agree on a specific value or outcome.
+Clients interacting with such a system see a single consistent state, independent of the server they are talking to.
 
-Problem: Hosts and networks can stop working, be slow or have other failures.
+This problem is hard to solve because most components participating in the system (servers, network, clocks, disk...) are inherently unreliable. They can not only fail and be complete unusable, they can also be slow, mangle data in transit (network packets ordering) or contain invalid data (bit flipping in RAM).
 
+Many consensus algorithms (including Raft) are based on a majority system. If a majority of the servers agree on a specific value, that value is considered the "true" value of the system.
 
 \subsection{The CAP Theorem}
 
-The CAP theorem describe how certain failures in a distributed system affects the system. It states that a distributed system can never provide more than two of the following guarantees:
+The CAP theorem describe how certain failures in a distributed system affect the system. It states that a distributed system can never provide more than two of the following guarantees:
+
+
 
 \begin{itemize}
     \item Consistency: TODO
     \item Availability: TODO
     \item Partition tolerance: TODO
 \end{itemize}
+
+
+CA: 
+CP: Down when majority is missing
+AP: Inconsisten State possible
 
 Raft is a CP algorithm, that means systems using this algorithm are tolerant to partitions and always provide consistency by sacrificing availability. 
 
