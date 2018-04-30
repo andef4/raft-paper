@@ -80,25 +80,20 @@ This problem is hard to solve because most components participating in the syste
 Many consensus algorithms (including Raft) are based on a majority system. If a majority of the servers agree on a specific value, that value is considered the "true" value of the system.
 
 \subsection{The CAP Theorem}
+TODO
+https://dzone.com/articles/understanding-the-cap-theorem
+http://blog.thislongrun.com/2015/04/the-unclear-cp-vs-ca-case-in-cap.html
+https://www.quora.com/Whats-the-difference-between-CA-and-CP-systems-in-the-context-of-CAP-Consistency-Availability-and-Partition-Tolerance
 
 The CAP theorem describe how certain failures in a distributed system affect the system. It states that a distributed system can never provide more than two of the following guarantees:
 
+\textbf{Consistency}: Operations in the system must appear as if they happened one after another in total order. All servers must return the same, most recent write to the system at the same time.
 
+\textbf{Availability}: Every working node in the system must be able to return a response to a request
 
-\begin{itemize}
-    \item Consistency: TODO
-    \item Availability: TODO
-    \item Partition tolerance: TODO
-\end{itemize}
+\textbf{Partition tolerance}: The system works even when the network drops packets, loses nodes or is partitioned
 
-
-CA: 
-CP: Down when majority is missing
-AP: Inconsisten State possible
-
-Raft is a CP algorithm, that means systems using this algorithm are tolerant to partitions and always provide consistency by sacrificing availability. 
-
-strongly-consistent
+Raft is a CP algorithm, that means systems using this algorithm are tolerant to partitions and always return a consistent view of the data in the system. Raft sacrifices the availability guarantee, which means that at least a majority of the servers must be working and be able to communicate with each other for the system to be usable.
 
 \section{The algorithm}
 A Raft cluster consists of nodes. A node is a server running the Raft software and communicating with the other nodes in the cluster over a network connection.
