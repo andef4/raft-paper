@@ -58,9 +58,9 @@ There are some proposed extensions to Raft which are useful when implementing a 
 
 This paper covers Raft, a consensus algorithm for distributed systems.
 
-Raft wants to be a simpler replacement for PAXOS, an algorithm developed by Leslie Lamport and considered the reference consensus algorithm for distributed systems\cite{paxos}. PAXOS suffers from two big problems, which Raft tries to solve: It is very hard to understand [CN] and it has some missing pieces to actually implement a real world system using PAXOS [CN (Chubby?)].
+Raft wants to be a simpler replacement for PAXOS, an algorithm developed by Leslie Lamport and considered the reference consensus algorithm for distributed systems\cite{paxos}. PAXOS suffers from two big problems, which Raft tries to solve: It is hard to understand \cite[p.91]{raft_phd_thesis}, has some missing pieces for a real world system and is generally hard to implement\cite{paxos_made_live}.
 
-Raft was developed by Diego Ongaro and extensively described in this PhD thesis [CN]. He not only describes how the algorithm works, but also did a study under students to test if the algorithm is actually easier to understand than PAXOS. Raft has been formally verified to be correct [CN] and implemented in multiple real world systems, e.g. in etcd [CN], Consul [CN] and RethinkDB [CN].
+Raft was developed by Diego Ongaro and extensively described in this PhD thesis \cite{raft_phd_thesis}. He not only describes how the algorithm works, but also did a study under students to test if the algorithm is actually easier to understand than PAXOS. Raft has been formally verified \cite{raft_proof} and implemented in multiple real world systems, e.g. in etcd \cite{etcd_raft}, Consul \cite{consul_raft} and RethinkDB \cite{rethinkdb_raft}.
 
 The offical GitHub Page \cite{raft_github} contains many further references about the algorithm, a simulator for the algorithm from which screenshots have been used in this paper and an extensive list of implementations in many different programming languages.
 
@@ -82,11 +82,11 @@ Many consensus algorithms (including Raft) are based on a majority system. If a 
 \subsection{The CAP Theorem}
 The CAP theorem describe how certain failures in a distributed system affect the system. It states that a distributed system can never provide more than two of the following guarantees: \cite{cap_theorem}
 
-\textbf{Consistency}: Operations in the system must appear as if they happened one after another in total order. All servers must return the same, most recent write to the system at the same time.
+\textbf{Consistency}: Operations in the system must appear as if they happened one after another in total order. At a specific time all servers must return the same, most recent write to the system.
 
-\textbf{Availability}: Every working node in the system must be able to return a response to a request
+\textbf{Availability}: Every working node in the system must be able to return a response to a request.
 
-\textbf{Partition tolerance}: The system works even when the network drops packets, loses nodes or is partitioned
+\textbf{Partition tolerance}: The system works even when the network drops packets, loses nodes or is partitioned.
 
 Raft is a CP algorithm, that means systems using this algorithm are tolerant to partitions and always return a consistent view of the data in the system. Raft sacrifices the availability guarantee, which means that at least a majority of the servers must be working and be able to communicate with each other for the system to be usable.
 
@@ -98,9 +98,9 @@ of six nodes, two nodes can crash and a majority can still be found, this is not
 This also means that when more than half of the cluster nodes are offline, the cluster is inoperable. This is availability guarantee of the CAP theorem the Raft algorithm gives up
 for the other two guarantees. 
 
-The current leader sends out a heartbeat network packet in some preconfigured interval. If a follower node does not receive a heartbeat within a given interval (which should be a bit longer than the interval in which the master sends out the heartbeats to account for the network roundtrip time), the node considers the master to be down an proposes ifself as a new leader.
+The current leader sends out a heartbeat network packet in some preconfigured interval. If a follower node does not receive a heartbeat within a given interval (which should be a bit longer than the interval in which the master sends out the heartbeats to account for the network round-trip time), the node considers the master to be down an proposes ifself as a new leader.
 
-* has a log with data
+The actual data of the cluster is saved in an append-only log structure. 
 
 The Raft algorithm is designed to survive the following and many other failure cases:
 \begin{itemize}
