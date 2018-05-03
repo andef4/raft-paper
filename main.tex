@@ -148,7 +148,7 @@ It has to be cleared every time the node gets elected and must not be reused in 
 
 \begin{tabular}{ | l | p{13.7cm} | }
 \hline
-nextIndex[] & TODO \\ \hline
+nextIndex[] & TODO copy from paper: When a leader first comes to power, it initializes all nextIndex values to the index just after the last one in its log (11 in Figure 7).  \\ \hline
 matchIndex[] & TODO \\ \hline
 \end{tabular}
 
@@ -177,28 +177,30 @@ important to always send messages/reconnect/retry, even when node was down
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
 
-\subsection{Leader election}
+\subsection{Startup and leader election}
 
-\subsection{Heartbeat}
+\subsection{Leader crash}
+A leader crash is handled exactly like the initial leader election.
+After the leader crash, one of the follower nodes election timer will run out, because the node did not receive a heartbeat (AppendEntry) message from a leader. The node then sends out 
+RequestVote packets and gets elected as the new leader.
 
 \subsection{Data write}
 Writing data into the cluster uses the same message as the heartbeat.
+* send out data
+* reply with success
+* update commit index in next appendentry heartbeat
+* nodes update commit index
 
+\subsection{Follower with old data reconnects to the cluster}
+* receives heartbeat message
+* prevLogIndex is more recent that lastApplied => reply with success=false to heartbeat message
+* leader sends appendEntry with lower index until it finds an index replicated by this node
+* leader will then send out appendEntries requests until the node has again all the data (probably in one packet if AppendEntry can contain multiple entries)
 
-\subsection{Master crash}
-A master crash is handled like the initial leader election, the election timeout runs out on one of the servers, the server ...
-
-\subsection{Delayed packages}
-=> Wait until enough packages arrive, this is a CP algorithm after all
-
-\subsection{Network partition}
-
-\subsection{Old follower returns}
-
-
-\subsection{Old master returns}
+\subsection{Old leader returns}
 => Steps down as soon as they see a heartbeat packet from the current master with a newer term.
 The node is a follower now and does the same as in the section above to regain all the missing data.
+* deleted old uncommited data
 
 \subsection{Switching masters in network partition}
 When connection between two nodes fail, a ping-pong between these two nodes *can* happen.
