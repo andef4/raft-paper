@@ -58,16 +58,16 @@ There are some proposed extensions to Raft which are useful when implementing a 
 
 This paper covers Raft, a consensus algorithm for distributed systems.
 
-Raft wants to be a simpler replacement for PAXOS, an algorithm developed by Leslie Lamport and considered the reference consensus algorithm for distributed systems[CN]. PAXOS suffers from two big problems, which Raft tries to solve: It is very hard to understand [CN] and it has some missing pieces to actually implement a real world system using PAXOS [CN (Chubby?)].
+Raft wants to be a simpler replacement for PAXOS, an algorithm developed by Leslie Lamport and considered the reference consensus algorithm for distributed systems\cite{paxos}. PAXOS suffers from two big problems, which Raft tries to solve: It is very hard to understand [CN] and it has some missing pieces to actually implement a real world system using PAXOS [CN (Chubby?)].
 
 Raft was developed by Diego Ongaro and extensively described in this PhD thesis [CN]. He not only describes how the algorithm works, but also did a study under students to test if the algorithm is actually easier to understand than PAXOS. Raft has been formally verified to be correct [CN] and implemented in multiple real world systems, e.g. in etcd [CN], Consul [CN] and RethinkDB [CN].
 
-The offical GitHub Page [https://raft.github.io/] contains many further references about the algorithm, a simulator for the algorithm from which screenshots have been used in this paper and an extensive list of implementations in many different programming languages.
+The offical GitHub Page \cite{raft_github} contains many further references about the algorithm, a simulator for the algorithm from which screenshots have been used in this paper and an extensive list of implementations in many different programming languages.
 
 TODO: rework
 This paper has four parts: The first part explains what consensus in a distributed system is and how it is used, the second part explains how the Raft algorithm works, the third part shows how Raft handles some failure modes. To validate the claim that Raft is easy to implement, the author of this paper tried to implement a simple key/value store using Raft, which is described in the fourth part.
 
-This paper describes the latest version of Raft as described in Diego Ongaros PhD dissertation. Compared to the papers published before the dissertation, the dissertation describes the client-cluster interaction much more clearly and contains a simpler cluster membership change algorithm.
+This paper describes the latest version of Raft as described in Diego Ongaros PhD dissertation \cite{raft_phd_thesis}. Compared to the papers published before the dissertation, the dissertation describes the client-cluster interaction much more clearly and contains a simpler cluster membership change algorithm.
 
 \subsection{What is consensus?}
 
@@ -80,12 +80,7 @@ This problem is hard to solve because most components participating in the syste
 Many consensus algorithms (including Raft) are based on a majority system. If a majority of the servers agree on a specific value, that value is considered the "true" value of the system.
 
 \subsection{The CAP Theorem}
-TODO
-https://dzone.com/articles/understanding-the-cap-theorem
-http://blog.thislongrun.com/2015/04/the-unclear-cp-vs-ca-case-in-cap.html
-https://www.quora.com/Whats-the-difference-between-CA-and-CP-systems-in-the-context-of-CAP-Consistency-Availability-and-Partition-Tolerance
-
-The CAP theorem describe how certain failures in a distributed system affect the system. It states that a distributed system can never provide more than two of the following guarantees:
+The CAP theorem describe how certain failures in a distributed system affect the system. It states that a distributed system can never provide more than two of the following guarantees: \cite{cap_theorem}
 
 \textbf{Consistency}: Operations in the system must appear as if they happened one after another in total order. All servers must return the same, most recent write to the system at the same time.
 
@@ -225,5 +220,8 @@ The code is available on GitHub and uses the MIT license: https://github.com/fot
 
 \section{Conclusion}
 References the abstract
+
+\bibliographystyle{plain}
+\bibliography{bibliography} 
 
 \end{document}
