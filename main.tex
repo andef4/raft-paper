@@ -100,7 +100,8 @@ for the other two guarantees.
 
 The current leader sends out a heartbeat network packet in some preconfigured interval. If a follower node does not receive a heartbeat within a given interval (which should be a bit longer than the interval in which the master sends out the heartbeats to account for the network round-trip time), the node considers the master to be down an proposes ifself as a new leader.
 
-The actual data of the cluster is saved in an append-only log structure. 
+The main data structure of the algorithm as a replicated, append-only log. It contains the data the clients wants to save in the system and also some metadata
+for the algorithm itself.
 
 The Raft algorithm is designed to survive the following and many other failure cases:
 \begin{itemize}
@@ -121,26 +122,35 @@ Every node in the Raft cluster is always in one of the following three states:
 
 This data has to be saved on disk before replying to the RPC call from the leader. The fsync or equivalent system call should be used on the file descriptor to make sure the data has arrived on the disk and not just the write caches of the operating system [CN].
 
-\begin{tabular}{ | l | p{'15cm'} | }
+\begin{tabular}{ | l | p{13.7cm} | }
 \hline
 currentTerm & The election term the node thinks is the current one \\ \hline
 votedFor & For which node the current node has voted in this term \\ \hline
-log[] & The actual saved data, first index is one, contains data and the term when the data was received from the master \\ \hline
+log[] & The replicated log containing all the data clients want to save in the system. The log is append only, only new entries can be append but old ones can not be changed.
+Every log entry contains an index (starting at one) and the term in which the data was written. \\ \hline
 \end{tabular}
 
 \subsubsection*{Volatile data}
 
-This data is not written to disk and initialized on node startup
-TODO: how?
-TODO: add table
+This data is not written to disk and initialized on node startup.
+
+\begin{tabular}{ | l | p{13.7cm} | }
+\hline
+commitIndex & Up to which index in the replicated log the current node considers to be committed (commited means a majority of the cluster
+received the data entry, saved it to disk and notified the leader). On startup, this information is initialized from the leaders heartbeat message (AppendEntry). \\ \hline
+lastApplied & The highest index in the replicated log, initialized when reading the log entries from disk on startup. \\ \hline
+\end{tabular}
 
 \subsubsection*{Leader data}
 
 This data is initialized when the node gets elected as leader and is not persisted to disk.
-It has to be cleared every time the node gets elected and must not be reused in later terms (TODO: correct?).
+It has to be cleared every time the node gets elected and must not be reused in later terms.
 
-TODO: table
-
+\begin{tabular}{ | l | p{13.7cm} | }
+\hline
+nextIndex[] & TODO \\ \hline
+matchIndex[] & TODO \\ \hline
+\end{tabular}
 
 \subsection{Timers}
 The Raft server needs two timers which when they run out trigger some action.
