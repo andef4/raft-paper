@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" style="border: 0px solid black" width="745" height="400">
+        <defs>
+
+    <style type="text/css"><![CDATA[
+svg #ring, svg #logsbg {
+  fill: #eeeeee;
+}
+
+svg .server {
+}
+
+svg .server path {
+  fill: none;
+  stroke: black;
+}
+
+svg .server.follower path {
+  stroke: #666666;
+}
+
+svg .server text {
+  text-anchor: middle;
+  dominant-baseline: central;
+  text-align: center;
+}
+
+svg .server.leader text.serverid {
+  fill: red;
+}
+
+svg .logs text.serverid.leader {
+  fill: red;
+}
+
+svg .server a,
+svg .server a:active,
+svg .server a:hover,
+svg .server a:focus,
+svg .server a:visited
+{
+  font-size: inherit;
+  text-decoration: none;
+}
+
+svg .server .votes .have {
+  fill: black;
+  stroke: black;
+}
+
+svg .server .votes .coming {
+  fill: gray;
+  stroke: black;
+}
+
+svg .server .votes .no {
+  fill: none;
+  stroke: black;
+}
+
+svg .message {
+  stroke-width: 3;
+}
+
+svg .message.RequestVote {
+  fill:   #66c2a5;
+  stroke: #66c2a5;
+}
+
+svg .message.AppendEntries {
+  fill:   #fc8d62;
+  stroke: #fc8d62;
+}
+
+svg .message.request circle {
+}
+
+svg .message.reply circle {
+  /* fill with no opacity so it's clickable */
+  fill-opacity: 0;
+}
+
+svg .logs text {
+  text-anchor: middle;
+  dominant-baseline: central;
+  text-align: center;
+}
+
+svg .log {
+  fill: none;
+  stroke: gray;
+}
+
+svg .entry rect {
+  fill: none;
+  stroke: black;
+  stroke-width: 3;
+}
+
+svg .entry.uncommitted rect {
+}
+
+svg .entry.committed rect {
+}
+
+svg .entry text {
+  text-anchor: middle;
+  dominant-baseline: central;
+  text-align: center;
+}
+
+svg #pause.paused {
+  fill:white;
+}
+
+svg #pause.resumed {
+  fill:none;
+}
+    ]]></style>
+
+          <marker id="TriangleOutM" orient="auto" refX="0.0" refY="0.0" style="overflow:visible">
+            <path d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z" transform="scale(0.4)"></path>
+          </marker>
+          <marker id="TriangleOutS-RequestVote" orient="auto" refX="0.0" refY="0.0" style="overflow:visible">
+            <path d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z" transform="scale(0.3)" class="message RequestVote"></path>
+          </marker>
+          <marker id="TriangleOutS-AppendEntries" orient="auto" refX="0.0" refY="0.0" style="overflow:visible">
+            <path d="M 5.77,0.0 L -2.88,5.0 L -2.88,-5.0 L 5.77,0.0 z" transform="scale(0.3)" class="message AppendEntries"></path>
+          </marker>
+        </defs>
+        <circle id="ring" cx="210" cy="210" r="150"></circle>
+        <g id="pause" class="resumed" transform="translate(210, 210) scale(42.857142857142854)">
+          <rect width="1" height="3" x="-1.25" y="-1.5"></rect>
+          <rect width="1" height="3" x=".25" y="-1.5"></rect>
+        </g>
+        <g id="messages"></g>
+        <g id="servers"><g id="server-1" class="server follower"><text class="serverid" x="209.99999999999997" y="10">S1</text><a><circle class="background" cx="209.99999999999997" cy="60" r="30" style="fill: #fc8d62"></circle><g class="votes"></g><path style="stroke-width: 5" d="M 209.99999999999997 , 27.5 A 32.5 , 32.5 0 0,1 209.99999999999997 92.5 M 209.99999999999997 , 92.5 A 32.5 , 32.5 0 0,1 193.50056400454312 88.00033235216723"></path><text class="term" x="209.99999999999997" y="60">1</text></a></g><g id="server-2" class="server follower"><text class="serverid" x="400.21130325903073" y="148.1966011250105">S2</text><a><circle class="background" cx="352.658477444273" cy="163.64745084375787" r="30" style="fill: #fc8d62"></circle><g class="votes"></g><path style="stroke-width: 5" d="M 352.658477444273 , 131.14745084375787 A 32.5 , 32.5 0 0,1 368.41941496676606 192.07002722965348"></path><text class="term" x="352.658477444273" y="163.64745084375787">1</text></a></g><g id="server-3" class="server follower"><text class="serverid" x="327.5570504584948" y="371.8033988749894">S3</text><a><circle class="background" cx="298.1677878438711" cy="331.35254915624205" r="30" style="fill: #fc8d62"></circle><g class="votes"></g><path style="stroke-width: 5" d="M 298.1677878438711 , 298.85254915624205 A 32.5 , 32.5 0 0,1 298.1677878438711 363.85254915624205 M 298.1677878438711 , 363.85254915624205 A 32.5 , 32.5 0 0,1 286.5954625019622 361.7224567323446"></path><text class="term" x="298.1677878438711" y="331.35254915624205">1</text></a></g><g id="server-4" class="server follower"><text class="serverid" x="92.44294954150541" y="371.8033988749895">S4</text><a><circle class="background" cx="121.83221215612906" cy="331.35254915624216" r="30" style="fill: #fc8d62"></circle><g class="votes"></g><path style="stroke-width: 5" d="M 121.83221215612906 , 298.85254915624216 A 32.5 , 32.5 0 0,1 128.72714506446533 363.1127427984343"></path><text class="term" x="121.83221215612906" y="331.35254915624216">1</text></a></g><g id="server-5" class="server follower"><text class="serverid" x="19.78869674096927" y="148.1966011250106">S5</text><a><circle class="background" cx="67.34152255572695" cy="163.64745084375795" r="30" style="fill: #fc8d62"></circle><g class="votes"></g><path style="stroke-width: 5" d="M 67.34152255572695 , 131.14745084375795 A 32.5 , 32.5 0 0,1 95.33517502985353 180.1582176690095"></path><text class="term" x="67.34152255572695" y="163.64745084375795">1</text></a></g></g>
+        <g class="logs"><rect id="logsbg" x="430" y="50" width="320" height="270"></rect><g id="log-indexes"><text x="484.09090909090907" y="66.33333333333333" width="26.181818181818183" height="32.666666666666664">1</text><text x="510.27272727272725" y="66.33333333333333" width="26.181818181818183" height="32.666666666666664">2</text><text x="536.4545454545455" y="66.33333333333333" width="26.181818181818183" height="32.666666666666664">3</text><text x="562.6363636363636" y="66.33333333333333" width="26.181818181818183" height="32.666666666666664">4</text><text x="588.8181818181818" y="66.33333333333333" width="26.181818181818183" height="32.666666666666664">5</text><text x="615" y="66.33333333333333" width="26.181818181818183" height="32.666666666666664">6</text><text x="641.1818181818182" y="66.33333333333333" width="26.181818181818183" height="32.666666666666664">7</text><text x="667.3636363636364" y="66.33333333333333" width="26.181818181818183" height="32.666666666666664">8</text><text x="693.5454545454545" y="66.33333333333333" width="26.181818181818183" height="32.666666666666664">9</text><text x="719.7272727272727" y="66.33333333333333" width="26.181818181818183" height="32.666666666666664">10</text></g><g id="log-S1"><text class="serverid follower" x="451" y="99.49999999999999">S1</text><rect x="471" y="83.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="497.1818181818182" y="83.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="523.3636363636364" y="83.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="549.5454545454545" y="83.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="575.7272727272727" y="83.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="601.9090909090909" y="83.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="628.0909090909091" y="83.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="654.2727272727273" y="83.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="680.4545454545455" y="83.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="706.6363636363636" y="83.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect></g><g id="log-S2"><text class="serverid follower" x="451" y="148.5">S2</text><rect x="471" y="132.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="497.1818181818182" y="132.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="523.3636363636364" y="132.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="549.5454545454545" y="132.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="575.7272727272727" y="132.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="601.9090909090909" y="132.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="628.0909090909091" y="132.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="654.2727272727273" y="132.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="680.4545454545455" y="132.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="706.6363636363636" y="132.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect></g><g id="log-S3"><text class="serverid follower" x="451" y="197.5">S3</text><rect x="471" y="181.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="497.1818181818182" y="181.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="523.3636363636364" y="181.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="549.5454545454545" y="181.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="575.7272727272727" y="181.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="601.9090909090909" y="181.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="628.0909090909091" y="181.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="654.2727272727273" y="181.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="680.4545454545455" y="181.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="706.6363636363636" y="181.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect></g><g id="log-S4"><text class="serverid follower" x="451" y="246.5">S4</text><rect x="471" y="230.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="497.1818181818182" y="230.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="523.3636363636364" y="230.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="549.5454545454545" y="230.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="575.7272727272727" y="230.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="601.9090909090909" y="230.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="628.0909090909091" y="230.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="654.2727272727273" y="230.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="680.4545454545455" y="230.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="706.6363636363636" y="230.16666666666666" width="26.181818181818183" height="32.666666666666664" class="log"></rect></g><g id="log-S5"><text class="serverid follower" x="451" y="295.5">S5</text><rect x="471" y="279.1666666666667" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="497.1818181818182" y="279.1666666666667" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="523.3636363636364" y="279.1666666666667" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="549.5454545454545" y="279.1666666666667" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="575.7272727272727" y="279.1666666666667" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="601.9090909090909" y="279.1666666666667" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="628.0909090909091" y="279.1666666666667" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="654.2727272727273" y="279.1666666666667" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="680.4545454545455" y="279.1666666666667" width="26.181818181818183" height="32.666666666666664" class="log"></rect><rect x="706.6363636363636" y="279.1666666666667" width="26.181818181818183" height="32.666666666666664" class="log"></rect></g></g>
+      </svg>

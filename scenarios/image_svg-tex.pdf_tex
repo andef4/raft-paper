@@ -1,0 +1,90 @@
+%% Creator: Inkscape inkscape 0.91, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'image.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{589.63935547bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.50319515)%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{image.pdf}}%
+    \put(0.26734877,0.49111149){\makebox(0,0)[b]{\smash{S1}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{image.pdf}}%
+    \put(0.26734877,0.42327341){\makebox(0,0)[b]{\smash{1}}}%
+    \put(0.52542015,0.30361167){\makebox(0,0)[b]{\smash{S2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{image.pdf}}%
+    \put(0.4609023,0.28264854){\makebox(0,0)[b]{\smash{1}}}%
+    \put(0.42684564,0.00023054){\makebox(0,0)[b]{\smash{S3}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{image.pdf}}%
+    \put(0.38697143,0.05511272){\makebox(0,0)[b]{\smash{1}}}%
+    \put(0.10785188,0.00023054){\makebox(0,0)[b]{\smash{S4}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{image.pdf}}%
+    \put(0.14772611,0.05511272){\makebox(0,0)[b]{\smash{1}}}%
+    \put(0.00927739,0.30361167){\makebox(0,0)[b]{\smash{S5}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{image.pdf}}%
+    \put(0.07379523,0.28264854){\makebox(0,0)[b]{\smash{1}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{image.pdf}}%
+    \put(0.63922478,0.41468059){\makebox(0,0)[b]{\smash{1}}}%
+    \put(0.67474727,0.41468059){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.71026972,0.41468059){\makebox(0,0)[b]{\smash{3}}}%
+    \put(0.74579221,0.41468059){\makebox(0,0)[b]{\smash{4}}}%
+    \put(0.7813147,0.41468059){\makebox(0,0)[b]{\smash{5}}}%
+    \put(0.81683719,0.41468059){\makebox(0,0)[b]{\smash{6}}}%
+    \put(0.85235968,0.41468059){\makebox(0,0)[b]{\smash{7}}}%
+    \put(0.88788218,0.41468059){\makebox(0,0)[b]{\smash{8}}}%
+    \put(0.92340467,0.41468059){\makebox(0,0)[b]{\smash{9}}}%
+    \put(0.95892716,0.41468059){\makebox(0,0)[b]{\smash{10}}}%
+    \put(0.5943283,0.36968133){\makebox(0,0)[b]{\smash{S1}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=8]{image.pdf}}%
+    \put(0.5943283,0.30320002){\makebox(0,0)[b]{\smash{S2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=9]{image.pdf}}%
+    \put(0.5943283,0.2367187){\makebox(0,0)[b]{\smash{S3}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=10]{image.pdf}}%
+    \put(0.5943283,0.17023739){\makebox(0,0)[b]{\smash{S4}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=11]{image.pdf}}%
+    \put(0.5943283,0.10375607){\makebox(0,0)[b]{\smash{S5}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=12]{image.pdf}}%
+  \end{picture}%
+\endgroup%
