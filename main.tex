@@ -47,12 +47,10 @@
 
 \section{Abstract}
 
-\includesvg{scenarios/image.svg}
-
 Raft is a consensus algorithm for distributed systems comparable, but much simpler to understand and implement than Paxos.
 This paper explains the algorithm from the bottom up, first describing all the components and
 then explaining how they work together to solve specific scenarios.
-There are some proposed extensions to Raft which are useful when implementing a real world distributed system which are examined in the paper. Finally, the author wrote an implementation of the Raft algorithm and provides some comment where the difficulties lie when implementing the algorithm.
+There are some proposed extensions to Raft which are useful when implementing a real world distributed system which are examined in the paper.
 
 \section{Introduction}
 
@@ -66,8 +64,8 @@ Raft was developed by Diego Ongaro and extensively described in this PhD thesis 
 
 The offical GitHub Page \cite{raft_github} contains many further references about the algorithm, a simulator for the algorithm from which screenshots have been used in this paper and an extensive list of implementations in many different programming languages.
 
-TODO: rework
-This paper has four parts: The first part explains what consensus in a distributed system is and how it is used, the second part explains how the Raft algorithm works, the third part shows how Raft handles some failure modes. To validate the claim that Raft is easy to implement, the author of this paper tried to implement a simple key/value store using Raft, which is described in the fourth part.
+This paper has three main parts: The first part explains what consensus in a distributed system means, the second part explains how the Raft algorithm works in detail and the third part shows how the algorithm reacts to some specific scenarios.
+The pictures for the scenarios sections were created using Raftscope \cite{raftscope}, a software to visualize the state of Raft-based distributed system.
 
 This paper describes the latest version of Raft as described in Diego Ongaros PhD dissertation \cite{raft_phd_thesis}. Compared to the papers published before the dissertation, the dissertation describes the client-cluster interaction much more clearly and contains a simpler cluster membership change algorithm.
 
@@ -161,9 +159,10 @@ The Raft server needs two timers which when they run out trigger some action.
 
 
 \subsubsection*{Hearbeat timer}
-timer on the leader to send out heartbeat messages
+* timer on the leader to send out heartbeat messages
+* timer to resend messages?
 
-\subsection{RPC}
+\subsection{Network communication}
 
 two way rpc
 important to always send messages/reconnect/retry, even when node was down
@@ -223,14 +222,6 @@ https://github.com/coreos/etcd/issues/741
 
 https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
 https://gist.github.com/armon/11059431
-
-\section {Implementation}
-
-The author of this paper implemented the algorithm to check the premise of a simple and easy to implement consensus algorithm. The implemented solution is a very simple key-value store, as described in the raft paper. The implementation is written in C++ and uses the Boost library for network communication and other utility functions, Protobuf to serialize the network packages between the node and the client and cereal to decode the json config file for each node.
-
-The code is available on GitHub and uses the MIT license: https://github.com/fotcorn/raft
-
-\subsection{Learnings}
 
 \section{Conclusion}
 References the abstract
