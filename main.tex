@@ -106,7 +106,7 @@ for the algorithm itself.
 The Raft algorithm is designed to survive the following and many other failure cases:
 \begin{itemize}
     \item The current leader crashes
-    \item Network connections between nodes fail
+    \item Network connections between nodes fails
     \item Network connections are very slow or drop messages between nodes
 \end{itemize}
 
@@ -148,9 +148,17 @@ It has to be cleared every time the node gets elected and must not be reused in 
 
 \begin{tabular}{ | l | p{13.7cm} | }
 \hline
-nextIndex[] & TODO copy from paper: When a leader first comes to power, it initializes all nextIndex values to the index just after the last one in its log (11 in Figure 7).  \\ \hline
-matchIndex[] & TODO \\ \hline
+nextIndex[] & Index of the next entry the leader will send to the specific follower. This map/associative array is initialized to the leaders last log entry index + 1 on leader election.
+This map is used when a followers log falls behind the leaders log and the leader starts to send missing log entries to the follower. \\ \hline
+matchIndex[] & Index of the latest acknowledged (written to disk) log entry for the specific follower. Initialized to zero on leader election. \\ \hline
 \end{tabular}
+
+
+
+
+
+
+
 
 \subsection{Timers}
 The Raft server needs two timers which when they run out trigger some action.
@@ -162,6 +170,12 @@ The Raft server needs two timers which when they run out trigger some action.
 * faster than election timer
 * timer on the leader to send out heartbeat messages
 * timer to resend messages for voting
+
+
+
+
+
+
 
 \subsection{Network communication}
 
