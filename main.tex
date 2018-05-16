@@ -229,11 +229,23 @@ When connection between two nodes fail, a ping-pong between these two nodes *can
 
 http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
 
-\section{Cluster membership}
-
 \section{Client interaction}
 
 * duplicate writes
+
+\section{Cluster membership}
+Until now, the described algorithm uses a predefined cluster configuration with a given number of nodes. In a real-world system, it is desirable to
+be able to add and remove nodes from the cluster. A use-case for this is e.g. replacing nodes for software updates or hardware upgrades or to
+scale a cluster over more nodes for better performance.
+
+The PhD dissertation \cite{raft_phd_thesis} describes in detail how such cluster membership changes can be implemented.
+The algorithm is quite complex because it has to avoid certain failure cases when adding/removing cluster members:
+
+\begin{itemize}
+    \item Only adding one server at a time should be allowed to avoid two groups of nodes to be formed which would allow two leaders in the systems to be elected
+    \item Removing a leader should be possible without interrupting the cluster operation
+    \item Added servers should not be allowed to be elected as leaders because they have not yet catched up on the data
+\end{itemize}
 
 
 
