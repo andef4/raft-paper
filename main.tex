@@ -94,11 +94,11 @@ Raft is a CP algorithm, that means systems using this algorithm are tolerant to 
 A Raft cluster consists of nodes. A node is a server running the Raft software and communicating with the other nodes in the cluster over a network connection.
 In every cluster, one node is elected as a leader node, which coordinates the operations inside the cluster. A leader can only be elected by
 a majority of the cluster nodes. This means the minimal cluster size is three nodes, and bigger clusters should always have an uneven count of nodes (In a cluster
-of six nodes, two nodes can crash and a majority can still be found, this is not better than a five node cluster).
-This also means that when more than half of the cluster nodes are offline, the cluster is inoperable. This is availability guarantee of the CAP theorem the Raft algorithm gives up
-for the other two guarantees. 
+of six nodes, two nodes can crash and a majority can still be found, this is not better than a five node cluster, where also two nodes can crash without impacting the cluster).
+This also means that when more than half of the cluster nodes are offline, the cluster is inoperable.
+This is availability guarantee of the CAP theorem the Raft algorithm gives up for the other two guarantees. 
 
-The current leader sends out a heartbeat network packet in some preconfigured interval. If a follower node does not receive a heartbeat within a given interval (which should be a bit longer than the interval in which the master sends out the heartbeats to account for the network round-trip time), the node considers the master to be down an proposes ifself as a new leader.
+The current leader sends out a heartbeat network packet in some preconfigured interval. If a follower node does not receive a heartbeat within a given interval (which should be a bit longer than the interval in which the master sends out the heartbeats to account for the network round-trip time), the node considers the master to be down and proposes itself as a new leader.
 
 The main data structure of the algorithm as a replicated, append-only log. It contains the data the clients wants to save in the system and also some metadata
 for the algorithm itself.
@@ -153,20 +153,29 @@ This map is used when a followers log falls behind the leaders log and the leade
 matchIndex[] & Index of the latest acknowledged (written to disk) log entry for the specific follower. Initialized to zero on leader election. \\ \hline
 \end{tabular}
 
-
-
-
-
-
-
-
 \subsection{Timers}
 The Raft server needs two timers which when they run out trigger some action.
 
 \subsubsection*{Election timer}
+After a leader has been elected, it will send out heartbeat messages to all followers. This heartbeat
+will reset the election timer running on the follower. If the timer runs out because the follower did not 
+receive a heartbeat, the node will switch into candidate state and begin the election process to become a leader itself.
+The election timer is inactive when the node is a leader.
 
+The actual timeout in milliseconds has to be defined randomly. The minimum should be the network round-trip time between two nodes plus some margin,
+and on top of that a random offset. The timeout should not be too high, because it influences the time the system requires to reelect a new leader
+if the old one crashes. The minimal timeout and the random range should be configurable, because it highly depends on the environment where the algorithm runs
+(network latency, server latency/performance etc.).
+
+The timeout has to be random to avoid split votes where multiple nodes switch into candidate mode at the same time and send out vote messages 
 
 \subsubsection*{Candiate and leader timer}
+This timer replaces the election timer when a node is in candidate or leader state.
+It s
+
+
+
+A second timer
 * faster than election timer
 * timer on the leader to send out heartbeat messages
 * timer to resend messages for voting
