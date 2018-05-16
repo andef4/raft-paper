@@ -92,7 +92,7 @@ Raft is a CP algorithm, that means systems using this algorithm are tolerant to 
 
 \section{The algorithm}
 A Raft cluster consists of nodes. A node is a server running the Raft software and communicating with the other nodes in the cluster over a network connection.
-In every cluster, one node is elected as a leader node, which coordinates the operations inside the cluster. A leader can only be elected by
+Every one has a unique ID which is used in the election process. In every cluster, one node is elected as a leader node, which coordinates the operations inside the cluster. A leader can only be elected by
 a majority of the cluster nodes. This means the minimal cluster size is three nodes, and bigger clusters should always have an uneven count of nodes (In a cluster
 of six nodes, two nodes can crash and a majority can still be found, this is not better than a five node cluster, where also two nodes can crash without impacting the cluster).
 This also means that when more than half of the cluster nodes are offline, the cluster is inoperable.
@@ -189,37 +189,58 @@ add additional calls.
 For the implementation of these RPC calls it is important that they are asynchronous, which means the caller should not wait until a message is received
 for a particular call but should instead handle the response independently when received later on.
 
-\textbf{RequestVote}
+\subsubsection*{RequestVote RPC call}
+The RequestVote RPC call is used in the election process. When the election timer of a node expires, the node will switch to the candidate state and send out a RequestVote request, asking the other nodes to vote for this node as a new leader.
+
+\textbf{Request}
 
 \begin{tabular}{ | l | p{13.7cm} | }
 \hline
-term &  test \\ \hline
+term & Current term of the candidate \\ \hline
+candidateId & Node id of the candidate \\ \hline
+lastLogIndex & Current term of the candidate \\ \hline
+lastLogTerm & Current term of the candidate \\ \hline
 \end{tabular}
 
-\textbf{RequestVote Response}
+\textbf{Response}
 
 \begin{tabular}{ | l | p{13.7cm} | }
 \hline
-term &  test \\ \hline
+term & The current term the answering node is in \\ \hline
+voteGranted & If the answering node votes for the requesting node \\ \hline
 \end{tabular}
 
+\textbf{Handling}
 
+* term handling
+* votedFor variable check
 * what happens when not enough votes are received in time? => candidate timer
 
-\textbf{AppendEntries}
+\subsubsection*{AppendEntries RPC call}
+The AppendEntries RPC call is used by the master as a heartbeat message and also for
+inserting data into the cluster log.
+
+\textbf{Request}
+
+\begin{tabular}{ | l | p{12.7cm} | }
+\hline
+term &  test \\ \hline
+leaderId &  test \\ \hline
+prevLogIndex &  test \\ \hline
+prevLogTerm &  test \\ \hline
+entires[] &  test \\ \hline
+leaderCommit &  test \\ \hline
+\end{tabular}
+
+\textbf{Response}
 
 \begin{tabular}{ | l | p{13.7cm} | }
 \hline
-term &  test \\ \hline
+term & test \\ \hline
+success & success \\ \hline
 \end{tabular}
 
-
-\textbf{AppendEntries Response}
-
-\begin{tabular}{ | l | p{13.7cm} | }
-\hline
-term &  test \\ \hline
-\end{tabular}
+\textbf{Handling}
 
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
