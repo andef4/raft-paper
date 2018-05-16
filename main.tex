@@ -233,6 +233,14 @@ http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
 
 * duplicate writes
 
+\subsection{Inconsistens/stale reads}
+(adressed in paper)
+https://github.com/coreos/etcd/issues/741
+
+https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
+https://gist.github.com/armon/11059431
+
+
 \section{Cluster membership}
 Until now, the described algorithm uses a predefined cluster configuration with a given number of nodes. In a real-world system, it is desirable to
 be able to add and remove nodes from the cluster. A use-case for this is e.g. replacing nodes for software updates or hardware upgrades or to
@@ -247,17 +255,29 @@ The algorithm is quite complex because it has to avoid certain failure cases whe
     \item Added servers should not be allowed to be elected as leaders because they have not yet catched up on the data
 \end{itemize}
 
+The algorithm for cluster membership is not as fleshed out as the core algorithm and contains many recommendations and ideas how things could be done, and not 
+concrete explanations how something should be implemented. This requires some design decisions and experimentation from the programmer when creating a real-world implementation.
 
-
-\subsection{Inconsistens/stale reads}
-(adressed in paper)
-https://github.com/coreos/etcd/issues/741
-
-https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
-https://gist.github.com/armon/11059431
+\section{Implementation}
+Two tries: C++ and Python
+Difficulties:
+Retrying requests/connects
+Simple RPC Request/Response systems like GRPC do not handle timeouts/errors 
+Timer and request handling at the same time
+Async programming or threads
+State locking
+100% understanding of the paper is required
+Extremely difficult to test
+Missing/incomplete describition/extensions for cluster implementation
 
 \section{Conclusion}
 References the abstract
+
+Usable real-world algorithm:
+etcd and consul, the backing stores for Kubernetes
+MongoDB, CockroachDB, RethinkDB
+Complex but very interesting problem domain
+
 
 \bibliographystyle{plain}
 \bibliography{bibliography} 
