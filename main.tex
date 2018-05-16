@@ -158,7 +158,7 @@ The Raft server needs two timers which when they run out trigger some action.
 
 \subsubsection*{Election timer}
 After a leader has been elected, it will send out heartbeat messages to all followers. This heartbeat
-will reset the election timer running on the follower. If the timer runs out because the follower did not 
+will restart the election timer running on the followers. If the timer runs out because the follower did not 
 receive a heartbeat, the node will switch into candidate state and begin the election process to become a leader itself.
 The election timer is inactive when the node is a leader.
 
@@ -167,26 +167,21 @@ and on top of that a random offset. The timeout should not be too high, because 
 if the old one crashes. The minimal timeout and the random range should be configurable, because it highly depends on the environment where the algorithm runs
 (network latency, server latency/performance etc.).
 
-The timeout has to be random to avoid split votes where multiple nodes switch into candidate mode at the same time and send out vote messages 
+The actual timeout amount has to be random to avoid split votes where multiple nodes switch into candidate mode at the same time and the votes get split
+up between these nodes. If this happens it is possible that no node receives the majority of the votes and the election process has to be restarted,
+making the time where the cluster has no leader longer. This can still happen with randomized timeouts, but the chances are much smaller.
 
-\subsubsection*{Candiate and leader timer}
-This timer replaces the election timer when a node is in candidate or leader state.
-It s
+\subsubsection*{Candidate and leader timer}
+This timer replaces the election timer when the node is a leader. In candidate state, both timers are active.
+The timeout amount has to be smaller than the minimal election timeout. Half of the minimal election timeout is a good start.
 
+In candidate mode, this timer is used to resend a RequestVote request message (see next chapter) if a node did not respond to the previous one.
 
-
-A second timer
-* faster than election timer
-* timer on the leader to send out heartbeat messages
-* timer to resend messages for voting
-
-
-
-
-
-
+In leader mode, this timer is used to periodically send out heartbeat messages to all followers.
 
 \subsection{Network communication}
+
+
 
 two way rpc
 important to always send messages/reconnect/retry, even when node was down
@@ -194,6 +189,8 @@ important to always send messages/reconnect/retry, even when node was down
 \textbf{RequestVote}
 
 \textbf{RequestVote Response}
+
+* what happens when not enough votes are received in time? => candidate timer
 
 \textbf{AppendEntries}
 
