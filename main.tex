@@ -181,20 +181,45 @@ In leader mode, this timer is used to periodically send out heartbeat messages t
 
 \subsection{Network communication}
 
-The communication between cluster nodes 
+The communication between cluster nodes uses a remote procedure call (RPC) systems with two request and two corresponding response messages/packets.
 
-* two way rpc
-* important to always send messages/reconnect/retry, even when node was down
+Clients interacting with the cluster add additional RPC calls (described in a later chapter) and some optional extensions (like cluster membership) can also
+add additional calls.
+
+For the implementation of these RPC calls it is important that they are asynchronous, which means the caller should not wait until a message is received
+for a particular call but should instead handle the response independently when received later on.
 
 \textbf{RequestVote}
 
+\begin{tabular}{ | l | p{13.7cm} | }
+\hline
+term &  test \\ \hline
+\end{tabular}
+
 \textbf{RequestVote Response}
+
+\begin{tabular}{ | l | p{13.7cm} | }
+\hline
+term &  test \\ \hline
+\end{tabular}
+
 
 * what happens when not enough votes are received in time? => candidate timer
 
 \textbf{AppendEntries}
 
+\begin{tabular}{ | l | p{13.7cm} | }
+\hline
+term &  test \\ \hline
+\end{tabular}
+
+
 \textbf{AppendEntries Response}
+
+\begin{tabular}{ | l | p{13.7cm} | }
+\hline
+term &  test \\ \hline
+\end{tabular}
 
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
