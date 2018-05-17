@@ -249,13 +249,38 @@ success & success \\ \hline
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
 
+The small circles are the cluster nodes. The number inside the circle is the current term the node is in, the number outside the circle is the node id. The line around the circles show the election timer.
+
 \subsection{Startup and leader election}
 
-\def\svgwidth{200}
-\input{scenarios/election/40.pdf_tex}
+\begin{tabularx}{\textwidth}{  p{150px}  X  }
+  \noindent\parbox[c]{\hsize}{
+  \def\svgwidth{150}
+  \input{scenarios/election/40.pdf_tex}
+  } & On cluster startup, there is no leader and all nodes are in the follower state.
+\end{tabularx}
 
+\begin{tabularx}{\textwidth}{  p{150px}  X  }
+  \noindent\parbox[c]{\hsize}{
+  \def\svgwidth{150}
+  \input{scenarios/election/60.pdf_tex}
+  } & TODO
+\end{tabularx}
 
-bla bla bla
+\begin{tabularx}{\textwidth}{  p{150px}  X  }
+  \noindent\parbox[c]{\hsize}{
+  \def\svgwidth{150}
+  \input{scenarios/election/65.pdf_tex}
+  } & TODO
+\end{tabularx}
+
+\begin{tabularx}{\textwidth}{  p{150px}  X  }
+  \noindent\parbox[c]{\hsize}{
+  \def\svgwidth{150}
+  \input{scenarios/election/72.pdf_tex}
+  } &TODO
+\end{tabularx}
+
 
 
 \subsection{Leader crash}
