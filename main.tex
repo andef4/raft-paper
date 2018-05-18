@@ -313,15 +313,20 @@ http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
 
 \section{Client interaction}
 
+\subsection{Potential problems}
 * duplicate writes
+
+\subsection{RPC call}
+\subsubsection*{Request}
+\subsubsection*{Response}
+
+\subsection{Handling}
 
 \subsection{Inconsistens/stale reads}
 (adressed in paper)
 https://github.com/coreos/etcd/issues/741
-
 https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
 https://gist.github.com/armon/11059431
-
 
 \section{Cluster membership}
 Until now, the described algorithm uses a predefined cluster configuration with a given number of nodes. In a real-world system, it is desirable to
