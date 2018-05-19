@@ -215,6 +215,7 @@ voteGranted & If the answering node votes for the requesting node \\ \hline
 * term handling
 * votedFor variable check
 * what happens when not enough votes are received in time? => candidate timer
+* lastlogindex and lastlogterm handling
 
 \subsubsection*{AppendEntries RPC call}
 The AppendEntries RPC call is used by the master as a heartbeat message and also for
@@ -310,6 +311,9 @@ The node is a follower now and does the same as in the section above to regain a
 When connection between two nodes fail, a ping-pong between these two nodes *can* happen.
 
 http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
+
+\subsection{Follower with incomplete data attempts to be elected leader}
+* check on lastLogINdex/lastLogTerm fails => reject vote
 
 \section{Client interaction}
 
