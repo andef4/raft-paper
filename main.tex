@@ -259,8 +259,8 @@ inserting data into the cluster log.
 \hline
 term &  The leaders currentTerm \\ \hline
 leaderId & The node id of the leader \\ \hline
-prevLogIndex &  TODO \\ \hline
-prevLogTerm &  TODO \\ \hline
+prevLogIndex & Index of the log entry directly before the new ones in entries[] \\ \hline
+prevLogTerm &  Election term of the log entry directly before the new ones in entries[] \\ \hline
 entires[] &  The new data to be appended to the log, blank in heartbeat messages \\ \hline
 leaderCommit &  The commitIndex of the leader \\ \hline
 \end{tabular}
@@ -274,8 +274,11 @@ success & If the request succeeded \\ \hline
 \end{tabular}
 
 \textbf{Request handling}
-* term check
-* prevLogIndex and prevLogTerm check
+As in the VoteRequest request and response handling, the first action is to check if the term of the
+leader in the request is smaller than currentTerm of the current node. If yes, a response with success
+set to false is sent back and the leader will immediatly step down.
+
+* prevLogIndex and prevLogTerm check (if missing => false, master will retry. If invalid => purge)
 * leaderCommit => update own commitIndex
 * entries
 
