@@ -96,7 +96,9 @@ Every one has a unique ID which is used in the election process. In every cluste
 a majority of the cluster nodes. This means the minimal cluster size is three nodes, and bigger clusters should always have an uneven count of nodes (In a cluster
 of six nodes, two nodes can crash and a majority can still be found, this is not better than a five node cluster, where also two nodes can crash without impacting the cluster).
 This also means that when more than half of the cluster nodes are offline, the cluster is inoperable.
-This is availability guarantee of the CAP theorem the Raft algorithm gives up for the other two guarantees. 
+This is availability guarantee of the CAP theorem the Raft algorithm gives up for the other two guarantees.
+
+Every leader is elected for a specific term. A term is a positive integer, incremented every time a node starts an election process by proposing itself as a new leader to the other nodes.
 
 The current leader sends out a heartbeat network packet in some preconfigured interval. If a follower node does not receive a heartbeat within a given interval (which should be a bit longer than the interval in which the master sends out the heartbeats to account for the network round-trip time), the node considers the master to be down and proposes itself as a new leader.
 
@@ -190,7 +192,15 @@ For the implementation of these RPC calls it is important that they are asynchro
 for a particular call but should instead handle the response independently when received later on.
 
 \subsubsection*{RequestVote RPC call}
-The RequestVote RPC call is used in the election process. When the election timer of a node expires, the node will switch to the candidate state and send out a RequestVote request, asking the other nodes to vote for this node as a new leader.
+The RequestVote RPC call is used in the election process. When the election timer of a node expires, the node will do the following things:
+
+\begin{itemize}
+    \item Switch to candidate state
+    \item Increment its currentTerm property by one
+    \item Sets votedFor property to its own node id
+    \item Reset the election timer
+    \item Send out RequestVote requests to all other nodes
+\end{itemize}
 
 \textbf{Request}
 
@@ -198,8 +208,8 @@ The RequestVote RPC call is used in the election process. When the election time
 \hline
 term & Current term of the candidate \\ \hline
 candidateId & Node id of the candidate \\ \hline
-lastLogIndex & Current term of the candidate \\ \hline
-lastLogTerm & Current term of the candidate \\ \hline
+lastLogIndex & Index of the last applied log entry (could be uncommitted) \\ \hline
+lastLogTerm & Term of the last applied log entry (could be uncommitted) \\ \hline
 \end{tabular}
 
 \textbf{Response}
@@ -210,12 +220,23 @@ term & The current term the answering node is in \\ \hline
 voteGranted & If the answering node votes for the requesting node \\ \hline
 \end{tabular}
 
-\textbf{Handling}
+\textbf{Request handling}
+The first thing a node receiving a RequestVote request does is comparing its own term with the term in the request. If the term in the request is smaller than its own, it will reject to vote for this node by sending back a response with its current term and voteGranted flag set to false. The lower term value in the request is an indicator that the node sending the request is not up to date with the cluster and should therefore not be elected as a leader.
 
-* term handling
-* votedFor variable check
-* what happens when not enough votes are received in time? => candidate timer
+If the receiving node is a candidate or leader and the term in the request is higher than its own term, it will immediately switch to follower state and stop sending out heartbeat requests.
+As above, a higher term value is an indicator for the \textit{receiving} node that it is behind the other nodes in the cluster and should not be a leader in this cluster.
+
+If the currentTerm is the same as the term in the request and the votedFor property is already set to some node id, the request will also be rejected by responding with voteGranted set to false.
+
 * lastlogindex and lastlogterm handling
+TODO
+
+\textbf{Candidate handling}
+* term higher => step down
+* what happens when not enough votes are received in time? => election timer
+* retry message sending with candidate timer
+* enough votes => switch to leader
+
 
 \subsubsection*{AppendEntries RPC call}
 The AppendEntries RPC call is used by the master as a heartbeat message and also for
@@ -225,26 +246,31 @@ inserting data into the cluster log.
 
 \begin{tabular}{ | l | p{12.7cm} | }
 \hline
-term &  test \\ \hline
-leaderId &  test \\ \hline
-prevLogIndex &  test \\ \hline
-prevLogTerm &  test \\ \hline
-entires[] &  test \\ \hline
-leaderCommit &  test \\ \hline
+term &  The leaders currentTerm \\ \hline
+leaderId & The node id of the leader \\ \hline
+prevLogIndex &  TODO \\ \hline
+prevLogTerm &  TODO \\ \hline
+entires[] &  The new data to be appended to the log, blank in heartbeat messages \\ \hline
+leaderCommit &  The commitIndex of the leader \\ \hline
 \end{tabular}
 
 \textbf{Response}
 
 \begin{tabular}{ | l | p{13.7cm} | }
 \hline
-term & test \\ \hline
-success & success \\ \hline
+term & The responding nodes currentTerm \\ \hline
+success & If the request succeeded \\ \hline
 \end{tabular}
 
-\textbf{Handling}
+\textbf{Request handling}
+* term check
+* prevLogIndex and prevLogTerm check
+* leaderCommit => update own commitIndex
+* entries
 
-
-
+\textbf{Response handling}
+* term check
+* catching up
 
 
 \section{Scenarios}
