@@ -141,6 +141,7 @@ This data is not written to disk and initialized on node startup.
 commitIndex & Up to which index in the replicated log the current node considers to be committed (commited means a majority of the cluster
 received the data entry, saved it to disk and notified the leader). On startup, this information is initialized from the leaders heartbeat message (AppendEntry). \\ \hline
 lastApplied & The highest index in the replicated log, initialized when reading the log entries from disk on startup. \\ \hline
+receivedVotes[] & Vote responses per node id, a vote could be granted or rejected \\ \hline
 \end{tabular}
 
 \subsubsection*{Leader data}
@@ -221,6 +222,7 @@ voteGranted & If the answering node votes for the requesting node \\ \hline
 \end{tabular}
 
 \textbf{Request handling}
+
 The first thing a node receiving a RequestVote request does is comparing its own term with the term in the request. If the term in the request is smaller than its own, it will reject to vote for this node by sending back a response with its current term and voteGranted flag set to false. The lower term value in the request is an indicator that the node sending the request is not up to date with the cluster and should therefore not be elected as a leader.
 
 If the receiving node is a candidate or leader and the term in the request is higher than its own term, it will immediately switch to follower state and stop sending out heartbeat requests.
@@ -228,15 +230,19 @@ As above, a higher term value is an indicator for the \textit{receiving} node th
 
 If the currentTerm is the same as the term in the request and the votedFor property is already set to some node id, the request will also be rejected by responding with voteGranted set to false.
 
-* lastlogindex and lastlogterm handling
-TODO
+The last check is if the lastLogIndex and lastLogTerm are the same or higher than the latest entry in the nodes log[]. If yes, the node response with voteGranted set to true. This check is used to make sure a node is only elected as leader when it has the most recent data in the log.
 
-\textbf{Candidate handling}
-* term higher => step down
-* what happens when not enough votes are received in time? => election timer
-* retry message sending with candidate timer
-* enough votes => switch to leader
+If the node responds with a successful vote (voteGranted is true), it will also reset its own election timer.
 
+\textbf{Candidate response handling}
+If the term received in the response is higher than its own term, the node will switch to follower mode and therefore gives up to become a leader in the current term.
+
+If the node does not receive enough votes (because more than half of the nodes are not accessible or the other nodes have a higher term), the election timer will run out again and a new election cycle is started.
+
+The candidate tracks its received vote answers in the receivedVotes[] associative array/map. This array
+saves if a node in the cluster voted for or against election the candidate as a new leader. If
+the candidate receives enough notes, it switches to leader state and starts to send out hearbeat messages. This array is also used to resend RequestVote requests to nodes which did not respond in time,
+which is measured using the candidate timer described above.
 
 \subsubsection*{AppendEntries RPC call}
 The AppendEntries RPC call is used by the master as a heartbeat message and also for
