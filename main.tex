@@ -50,7 +50,11 @@
 Raft is a consensus algorithm for distributed systems comparable, but much simpler to understand and implement than Paxos.
 This paper explains the algorithm from the bottom up, first describing all the components and
 then explaining how they work together to solve specific scenarios.
-There are some proposed extensions to Raft which are useful when implementing a real world distributed system which are examined in the paper.
+
+The paper describes the behaviour of the algorithm, especially the reaction to network messages
+in great detail, including discussing edge cases. This should help programmers to implement
+the algorithm because it requires much less cross-referencing information from multiple chapters in
+comparison to the original paper and PhD thesis.
 
 \section{Introduction}
 
@@ -235,6 +239,7 @@ The last check is if the lastLogIndex and lastLogTerm are the same or higher tha
 If the node responds with a successful vote (voteGranted is true), it will also reset its own election timer.
 
 \textbf{Candidate response handling}
+
 If the term received in the response is higher than its own term, the node will switch to follower mode and therefore gives up to become a leader in the current term.
 
 If the node does not receive enough votes (because more than half of the nodes are not accessible or the other nodes have a higher term), the election timer will run out again and a new election cycle is started.
