@@ -437,6 +437,9 @@ https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
 https://gist.github.com/armon/11059431
 
 \section{Implementation}
+
+
+
 Two attempts: C++ and Python
 Difficulties:
 Retrying requests/connects
@@ -449,14 +452,14 @@ State locking
 Extremely difficult to test
 
 \section{Conclusion}
-References the abstract
+Today, there are multiple real-world implementations of distributed systems using the Raft algorithm, proving that one of the main goals of Raft have been accomplished.
 
-Usable real-world algorithm:
-etcd and consul, the backing stores for Kubernetes
-MongoDB, CockroachDB, RethinkDB
-Complex but very interesting problem domain
+Kubernetes, a container management system initially developed by Google and now having a broad support in the IT community uses etcd, a key-value store written in Go and implementing the Raft algorithm, as its only database. Consul, a similar service to etcd can be used as a replacement in Kubernetes. Consul also uses the Raft algorithm.
+Both systems are CP systems as described in the Raft paper.
 
+Many newer databases from the NoSQL movement are also using the Raft algorithm, including MongoDB \cite{mongodb_raft}, CockroachDB\cite{cockroachdb_raft} and RethinkDB\cite{rethinkdb_raft}. For performance reasons, most of these databases use Raft for coordination inside the cluster, but not for the actual data replication\cite[Development section]{rethinkdb_raft_metadata}.
 
+The second 
 Understandable?
 * checking the code helped writing this paper
 
