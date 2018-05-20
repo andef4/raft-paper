@@ -193,11 +193,14 @@ In leader mode, this timer is used to periodically send out heartbeat messages t
 
 The communication between cluster nodes uses a remote procedure call (RPC) systems with two request and two corresponding response messages/packets.
 
-Clients interacting with the cluster add additional RPC calls (described in a later chapter) and some optional extensions (like cluster membership) can also
+Clients interacting with the cluster add additional RPC calls and some optional extensions (like cluster membership) can also
 add additional calls.
 
 For the implementation of these RPC calls it is important that they are asynchronous, which means the caller should not wait until a message is received
 for a particular call but should instead handle the response independently when received later on.
+
+The first message pair is RequestVote which is used in the voting process. The request is sent out ony by nodes in candidate state.
+The second pair is AppendEntries which is sent out by the master as a heartbeat message and also to append data to the distrbuted log[] data structure.
 
 \subsubsection*{RequestVote RPC call}
 The RequestVote RPC call is used in the election process. When the election timer of a node expires, the node will do the following things:
@@ -242,7 +245,6 @@ The last check is if the lastLogIndex and lastLogTerm are the same or higher tha
 If the node responds with a successful vote (voteGranted is true), it will also reset its own election timer.
 
 \textbf{Candidate response handling}
-
 If the term received in the response is higher than its own term, the node will switch to follower mode and therefore gives up to become a leader in the current term.
 
 If the node does not receive enough votes (because more than half of the nodes are not accessible or the other nodes have a higher term), the election timer will run out again and a new election cycle is started.
@@ -254,7 +256,10 @@ which is measured using the candidate timer described above.
 
 \subsubsection*{AppendEntries RPC call}
 The AppendEntries RPC call is used by the master as a heartbeat message and also for
-inserting data into the cluster log.
+inserting data into the cluster log. It receives new data from a client and sends it out
+to all followers. If enough followers acknowledge that they received the data, the leader
+considers the data as committed and will signal to all followers in the next AppendEntry request 
+that they should also consider the data committed.
 
 \textbf{Request}
 
@@ -277,18 +282,38 @@ success & If the request succeeded \\ \hline
 \end{tabular}
 
 \textbf{Request handling}
-As in the VoteRequest request and response handling, the first action is to check if the term of the
+As in the VoteRequest request handling, the first action is to check if the term of the
 leader in the request is smaller than currentTerm of the current node. If yes, a response with success
-set to false is sent back and the leader will immediatly step down.
+set to false is sent back.
 
-* prevLogIndex and prevLogTerm check (if missing => false, master will retry. If invalid => purge)
-* leaderCommit => update own commitIndex
-* entries
+Next, the follower checks if it has an entry in his log with index prevLogIndex and this entry having the term prevLogTerm.
+If there is an entry but the term is incorrect, the follower removes this entry and all following entries and responses
+with success set to false. If the follower has no entry with this index/term, it will also answer with success set to false.
+The leader will start to send the missing log entries (see "Log data catch up" section below).
+
+If the follower has the entries referenced in prevLogIndex and prevLogTerm, it will append the data in the entries[] field to his
+own log. These entries are not committed yet, because it is possible that only a minority of the nodes in the cluster has the new data.
+
+If the leader receives enough successful AppendEntry responses, it will increase its own commitIndex and send that out in the next
+AppendEntry request (heartbeat or with new data) in the leaderCommit field. When the checks above (term and prevLogIndex/prevLogTerm)
+are successful, the follower will set its own commitIndex to the one in leaderCommit.
 
 \textbf{Response handling}
-* term check
-* catching up
+If the term in the response is higher than the currentTerm of the leader, the leader steps down immediatly. The higher term
+is an indicator that the leader is not up to date with the rest of the cluster.
 
+If the success field is set to true, the leader records the highest written index (prevLogI
+
+
+nextIndex, matchIndex
+
+
+
+\textbf{Log data catch up}
+As with other message
+
+* catching up
+* commitindex
 
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
@@ -332,6 +357,11 @@ A leader crash is handled exactly like the initial leader election.
 After the leader crash, one of the follower nodes election timer will run out, because the node did not receive a heartbeat (AppendEntry) message from a leader. The node then sends out 
 RequestVote packets and gets elected as the new leader.
 
+\subsection{Split vote}
+
+\subsection{Network partition}
+* split into 2/3 nodes with two masters
+
 \subsection{Data write}
 Writing data into the cluster uses the same message as the heartbeat.
 * send out data
@@ -361,13 +391,9 @@ http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
 \section{Client interaction}
 
 \subsection{Potential problems}
+* cluster/leader discovery
 * duplicate writes
-
-\subsection{RPC call}
-\subsubsection*{Request}
-\subsubsection*{Response}
-
-\subsection{Handling}
+* stale reads
 
 \subsection{Inconsistens/stale reads}
 (adressed in paper)
