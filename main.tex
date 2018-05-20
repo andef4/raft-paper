@@ -140,13 +140,16 @@ Every log entry contains an index (starting at one) and the term in which the da
 
 This data is not written to disk and initialized on node startup.
 
-\begin{tabular}{ | l | p{13.7cm} | }
+\begin{tabularx}{\textwidth}{  | p{80px} | X | }
 \hline
 commitIndex & Up to which index in the replicated log the current node considers to be committed (commited means a majority of the cluster
-received the data entry, saved it to disk and notified the leader). On startup, this information is initialized from the leaders heartbeat message (AppendEntry). \\ \hline
-lastApplied & The highest index in the replicated log, initialized when reading the log entries from disk on startup. \\ \hline
-receivedVotes[] & Vote responses per node id, a vote could be granted or rejected \\ \hline
-\end{tabular}
+received the data entry, saved it to disk and notified the leader). On startup, this information is initialized from the leaders heartbeat message (AppendEntry). \\
+\hline
+lastApplied & The highest index in the replicated log, initialized when reading the log entries from disk on startup. \\
+\hline
+receivedVotes[] & Vote responses per node id, a vote could be granted or rejected \\
+\hline
+\end{tabularx}
 
 \subsubsection*{Leader data}
 
