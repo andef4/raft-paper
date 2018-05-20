@@ -47,7 +47,8 @@
 
 \section{Abstract}
 
-Raft is a consensus algorithm for distributed systems comparable, but much simpler to understand and implement than Paxos.
+Raft is a consensus algorithm for distributed systems. It aims to be easier to understand and implemented in real-world software than Paxos, an older and wildy used algorithm.
+
 This paper explains the algorithm from the bottom up, first describing all the components and
 then explaining how they work together to solve specific scenarios.
 
@@ -316,21 +317,6 @@ If success in the response of the AppendEntry request is false, the data of the 
 
 
 
-\section{Client interaction}
-
-
-
-\subsection{Challenges}
-* cluster/leader discovery
-* duplicate writes
-* stale reads
-
-
-
-
-
-
-
 \section{Cluster membership}
 Until now, the described algorithm uses a predefined cluster configuration with a given number of nodes. In a real-world system, it is desirable to
 be able to add and remove nodes from the cluster. A use-case for this is e.g. replacing nodes for software updates or hardware upgrades or to
@@ -349,13 +335,18 @@ The algorithm for cluster membership is not as fleshed out as the core algorithm
 concrete explanations how something should be implemented. This requires some design decisions and experimentation from the programmer when creating a real-world implementation.
 
 
+\section{Client interaction}
 
+Until now, we only describe how nodes inside the cluster communicate with each other. To make the cluster actually usable from outside the cluster, some challenges have to be solved which are described in this chapter.
 
+\subsection{Cluster discovery}
+The first challenge for the client is to find the cluster. When the cluster is static and does not support member changes (see next chapter), this can be done by simply hard-coding the IP addresses of the cluster members in the client configuration. Resolving IP addresses using the domain name system would also be a possibility. This approach can also be used with changing cluster memberships, by updating the DNS records on changes.
 
+\subsection{Leader discovery}
+Only the leader in a Raft cluster can actually add new data to the log[]. One solution for this problem is that every node which gets contacted by a client but is not a leader acts as a proxy for the client and routes the requests to the master. Another solution is responding with the node id of the current leader. The node id of the leader is sent to all followers in the AppendEntry heartbeat message and can be sent out to clients.
 
-
-
-
+\subsection{Duplicate writes}
+TODO
 
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
@@ -444,11 +435,9 @@ Two attempts: C++ and Python
 Difficulties:
 Retrying requests/connects
 Network timeout
-Simple RPC Request/Response systems like GRPC do not handle timeouts/errors 
 Timer and request handling at the same time
 Async programming or threads
 State locking
-100% understanding of the paper is required
 Extremely difficult to test
 
 \section{Conclusion}
@@ -457,11 +446,9 @@ Today, there are multiple real-world implementations of distributed systems usin
 Kubernetes, a container management system initially developed by Google and now having a broad support in the IT community uses etcd, a key-value store written in Go and implementing the Raft algorithm, as its only database. Consul, a similar service to etcd can be used as a replacement in Kubernetes. Consul also uses the Raft algorithm.
 Both systems are CP systems as described in the Raft paper.
 
-Many newer databases from the NoSQL movement are also using the Raft algorithm, including MongoDB \cite{mongodb_raft}, CockroachDB\cite{cockroachdb_raft} and RethinkDB\cite{rethinkdb_raft}. For performance reasons, most of these databases use Raft for coordination inside the cluster, but not for the actual data replication\cite[Development section]{rethinkdb_raft_metadata}.
+Many newer databases from the NoSQL movement are also using the Raft algorithm, including MongoDB \cite{mongodb_raft}, CockroachDB\cite{cockroachdb_raft} and RethinkDB\cite{rethinkdb_raft}. For performance reasons, some of these databases use Raft for coordination inside the cluster, but not for the actual data replication\cite[Development section]{rethinkdb_raft_metadata}.
 
-The second 
-Understandable?
-* checking the code helped writing this paper
+Diego Ongaro did a user study for his PhD thesis to prove that the algorithm is easier to understand than Paxos \cite[Raft user study chapter]{raft_phd_thesis}. The author of this paper also thinks that the algorithm is understandable, but by no means simple. Besides the original paper and the PhD thesis, the visualization Raftscope \cite{raftscope} and The Secret Lives of Data \cite{the_secret_lives_of_data} helper quite a bit, as did the source code of LogCabin\cite{logcabin}, the Raft implementation Ongaro wrote for his thesis.
 
 \bibliographystyle{plain}
 \bibliography{bibliography} 
