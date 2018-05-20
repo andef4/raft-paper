@@ -314,6 +314,8 @@ If success in the response of the AppendEntry request is false, the data of the 
 
 
 
+
+
 \section{Client interaction}
 
 
@@ -323,11 +325,11 @@ If success in the response of the AppendEntry request is false, the data of the 
 * duplicate writes
 * stale reads
 
-\subsection{Inconsistens/stale reads}
-(adressed in paper)
-https://github.com/coreos/etcd/issues/741
-https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
-https://gist.github.com/armon/11059431
+
+
+
+
+
 
 \section{Cluster membership}
 Until now, the described algorithm uses a predefined cluster configuration with a given number of nodes. In a real-world system, it is desirable to
@@ -345,6 +347,15 @@ The algorithm is quite complex because it has to avoid certain failure cases whe
 
 The algorithm for cluster membership is not as fleshed out as the core algorithm and contains many recommendations and ideas how things could be done, and not 
 concrete explanations how something should be implemented. This requires some design decisions and experimentation from the programmer when creating a real-world implementation.
+
+
+
+
+
+
+
+
+
 
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
@@ -406,6 +417,9 @@ Writing data into the cluster uses the same message as the heartbeat.
 * leader sends appendEntry with lower index until it finds an index replicated by this node
 * leader will then send out appendEntries requests until the node has again all the data (probably in one packet if AppendEntry can contain multiple entries)
 
+\subsection{Follower with incomplete data attempts to be elected leader}
+* check on lastLogINdex/lastLogTerm fails => reject vote
+
 \subsection{Old leader returns}
 => Steps down as soon as they see a heartbeat packet from the current master with a newer term.
 The node is a follower now and does the same as in the section above to regain all the missing data.
@@ -416,8 +430,11 @@ When connection between two nodes fail, a ping-pong between these two nodes *can
 
 http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
 
-\subsection{Follower with incomplete data attempts to be elected leader}
-* check on lastLogINdex/lastLogTerm fails => reject vote
+\subsection{Inconsistens/stale reads}
+(adressed in paper)
+https://github.com/coreos/etcd/issues/741
+https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
+https://gist.github.com/armon/11059431
 
 \section{Implementation}
 Two attempts: C++ and Python
@@ -439,6 +456,9 @@ etcd and consul, the backing stores for Kubernetes
 MongoDB, CockroachDB, RethinkDB
 Complex but very interesting problem domain
 
+
+Understandable?
+* checking the code helped writing this paper
 
 \bibliographystyle{plain}
 \bibliography{bibliography} 
