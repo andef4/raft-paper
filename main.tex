@@ -345,8 +345,15 @@ The first challenge for the client is to find the cluster. When the cluster is s
 \subsection{Leader discovery}
 Only the leader in a Raft cluster can actually add new data to the log[]. One solution for this problem is that every node which gets contacted by a client but is not a leader acts as a proxy for the client and routes the requests to the master. Another solution is responding with the node id of the current leader. The node id of the leader is sent to all followers in the AppendEntry heartbeat message and can be sent out to clients.
 
+\subsection{Writing data}
+After finding the leader, a client sends data to leader. The leader adds the data to the Raft log and replicates the data to the cluster by sending out AppendEntries messages. Only when the leader receives an successful answer from a majority of the nodes in the cluster, it returns a success response message to the client.
+
 \subsection{Duplicate writes}
-TODO
+Another guarantee the Raft algorithm tries to make is linearizability, which means a write of new data is executed exactly once. To implement this, a client registers with the cluster when first connecting. The cluster then creates a client session in memory. When the client sends a request to write some data, the request contains a unique request id. This request id is saved in the session. The session will be checked every time a new request from this client comes in to avoid duplicate writes from the same client by checking if the request id is already in the session.
+
+A duplicate write can happen when a majority of the followers acknowledge the write, but the leader never sends back a success response message, because the leader crashed or the network between the client and the leader stopped to work.
+
+For real-world implementations, it is important to remove sessions from clients which are not active any more, to avoid running out of memory. There are different approaches how to implement this, some are described in the PhD thesis\cite{raft_phd_thesis}, chapter 6.3.
 
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
@@ -359,31 +366,29 @@ The small circles are the cluster nodes. The number inside the circle is the cur
   \noindent\parbox[c]{\hsize}{
   \def\svgwidth{150}
   \input{scenarios/election/40.pdf_tex}
-  } & On cluster startup, there is no leader and all nodes are in the follower state.
+  } & On cluster start up, there is no leader and all nodes are in the follower state.
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{  p{150px}  X  }
   \noindent\parbox[c]{\hsize}{
   \def\svgwidth{150}
   \input{scenarios/election/60.pdf_tex}
-  } & TODO
+  } & After some time, one (or more, see split vote section below) nodes (S1) election timer will run out. The node will switch to candidate mode and send out RequestVote request messages (green points).
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{  p{150px}  X  }
   \noindent\parbox[c]{\hsize}{
   \def\svgwidth{150}
   \input{scenarios/election/65.pdf_tex}
-  } & TODO
+  } & All followers vote for this candidate by sending back a successful RequestVote response.
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{  p{150px}  X  }
   \noindent\parbox[c]{\hsize}{
   \def\svgwidth{150}
   \input{scenarios/election/72.pdf_tex}
-  } &TODO
+  } & The node S1 is now elected as leader and starts to send out AppendEntries heartbeat messages.
 \end{tabularx}
-
-
 
 \subsection{Leader crash}
 A leader crash is handled exactly like the initial leader election.
@@ -392,8 +397,6 @@ RequestVote packets and gets elected as the new leader.
 
 \subsection{Split vote}
 
-\subsection{Network partition}
-* split into 2/3 nodes with two masters
 
 \subsection{Data write}
 Writing data into the cluster uses the same message as the heartbeat.
@@ -401,6 +404,10 @@ Writing data into the cluster uses the same message as the heartbeat.
 * reply with success
 * update commit index in next appendentry heartbeat
 * nodes update commit index
+
+\subsection{Network partition}
+* split into 2/3 nodes with two masters
+
 
 \subsection{Follower with old data reconnects to the cluster}
 * receives heartbeat message
@@ -428,8 +435,6 @@ https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
 https://gist.github.com/armon/11059431
 
 \section{Implementation}
-
-
 
 Two attempts: C++ and Python
 Difficulties:
