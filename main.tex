@@ -191,13 +191,9 @@ In leader mode, this timer is used to periodically send out heartbeat messages t
 
 \subsection{Network communication}
 
-The communication between cluster nodes uses a remote procedure call (RPC) systems with two request and two corresponding response messages/packets.
+The communication between cluster nodes uses a remote procedure call (RPC) systems with two request and two corresponding response messages/packets. A RPC system with request/responses is required because handling of some responses require knowledge of the data sent in the request.
 
-Clients interacting with the cluster add additional RPC calls and some optional extensions (like cluster membership) can also
-add additional calls.
-
-For the implementation of these RPC calls it is important that they are asynchronous, which means the caller should not wait until a message is received
-for a particular call but should instead handle the response independently when received later on.
+Clients interacting with the cluster add additional RPC calls and some optional extensions (like cluster membership) can also add additional calls.
 
 The first message pair is RequestVote which is used in the voting process. The request is sent out ony by nodes in candidate state.
 The second pair is AppendEntries which is sent out by the master as a heartbeat message and also to append data to the distrbuted log[] data structure.
@@ -245,6 +241,7 @@ The last check is if the lastLogIndex and lastLogTerm are the same or higher tha
 If the node responds with a successful vote (voteGranted is true), it will also reset its own election timer.
 
 \textbf{Candidate response handling}
+
 If the term received in the response is higher than its own term, the node will switch to follower mode and therefore gives up to become a leader in the current term.
 
 If the node does not receive enough votes (because more than half of the nodes are not accessible or the other nodes have a higher term), the election timer will run out again and a new election cycle is started.
@@ -265,12 +262,12 @@ that they should also consider the data committed.
 
 \begin{tabular}{ | l | p{12.7cm} | }
 \hline
-term &  The leaders currentTerm \\ \hline
+term & The leaders currentTerm \\ \hline
 leaderId & The node id of the leader \\ \hline
 prevLogIndex & Index of the log entry directly before the new ones in entries[] \\ \hline
-prevLogTerm &  Election term of the log entry directly before the new ones in entries[] \\ \hline
-entires[] &  The new data to be appended to the log, blank in heartbeat messages \\ \hline
-leaderCommit &  The commitIndex of the leader \\ \hline
+prevLogTerm & Election term of the log entry directly before the new ones in entries[] \\ \hline
+entires[] & The new data to be appended to the log, blank in heartbeat messages \\ \hline
+leaderCommit & The commitIndex of the leader \\ \hline
 \end{tabular}
 
 \textbf{Response}
@@ -281,7 +278,12 @@ term & The responding nodes currentTerm \\ \hline
 success & If the request succeeded \\ \hline
 \end{tabular}
 
-\textbf{Request handling}
+\textbf{Request sending}
+
+The leader sends out AppendEntries when the heartbeat timer runs out or when a client sends new data. In both cases the request to the followers is constructed in the same way. When the request is sent out because the leader received new data from a client, it first appends the new data to its own log[]. Next, it starts to build the request to all followers: The prevLogIndex field is set to the value in nextIndex[] array for the specific node minus one, prevLogTerm is set to the corresponding term of the log entry. The entries[] field is now filled up with data from the leaders[] log starting with the index in nextIndex[] for the node.
+
+\textbf{Request handling and response sending}
+
 As in the VoteRequest request handling, the first action is to check if the term of the
 leader in the request is smaller than currentTerm of the current node. If yes, a response with success
 set to false is sent back.
@@ -294,26 +296,55 @@ The leader will start to send the missing log entries (see "Log data catch up" s
 If the follower has the entries referenced in prevLogIndex and prevLogTerm, it will append the data in the entries[] field to his
 own log. These entries are not committed yet, because it is possible that only a minority of the nodes in the cluster has the new data.
 
-If the leader receives enough successful AppendEntry responses, it will increase its own commitIndex and send that out in the next
-AppendEntry request (heartbeat or with new data) in the leaderCommit field. When the checks above (term and prevLogIndex/prevLogTerm)
-are successful, the follower will set its own commitIndex to the one in leaderCommit.
+If the leader receives enough successful AppendEntry responses, it will increase its own commitIndex and send that out in the next AppendEntry request (heartbeat or with new data) in the leaderCommit field. When the checks above (term and prevLogIndex/prevLogTerm) are successful, the follower will set its own commitIndex to the one in leaderCommit.
 
 \textbf{Response handling}
-If the term in the response is higher than the currentTerm of the leader, the leader steps down immediatly. The higher term
+
+If the term in the response is higher than the currentTerm of the leader, the leader steps down immediately. The higher term
 is an indicator that the leader is not up to date with the rest of the cluster.
 
-If the success field is set to true, the leader records the highest written index (prevLogI
+If the success field is set to true, the leader records the highest written index (prevLogIndex + count of sent entries in the request) in its matchIndex[] array and
+the same value plus one in the nextIndex[] array.
 
-
-nextIndex, matchIndex
-
-
+If enough nodes (the majority of the cluster including the leader) acknowledge the new data (can be checked using the matchIndex[] array), the leader will increase its commitIndex which will then be sent out to all nodes on the next AppendEntries request.
 
 \textbf{Log data catch up}
-As with other message
 
-* catching up
-* commitindex
+If success in the response of the AppendEntry request is false, the data of the follower is not up to date or contains invalid data. The leader will begin sending out AppendEntries requests with lowered prevLogIndex/prevLogTerm every time until the follower finds a log[] entry matching with them. After that, the leader will start sending out log entries until the follower has the exact same log as the leader. This process uses the nextIndex[] array on the leader.
+
+
+
+\section{Client interaction}
+
+
+
+\subsection{Challenges}
+* cluster/leader discovery
+* duplicate writes
+* stale reads
+
+\subsection{Inconsistens/stale reads}
+(adressed in paper)
+https://github.com/coreos/etcd/issues/741
+https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
+https://gist.github.com/armon/11059431
+
+\section{Cluster membership}
+Until now, the described algorithm uses a predefined cluster configuration with a given number of nodes. In a real-world system, it is desirable to
+be able to add and remove nodes from the cluster. A use-case for this is e.g. replacing nodes for software updates or hardware upgrades or to
+scale a cluster over more nodes for better performance.
+
+The PhD dissertation \cite{raft_phd_thesis} describes in detail how such cluster membership changes can be implemented.
+The algorithm is quite complex because it has to avoid certain failure cases when adding/removing cluster members:
+
+\begin{itemize}
+    \item Only adding one server at a time should be allowed to avoid two groups of nodes to be formed which would allow two leaders in the systems to be elected
+    \item Removing a leader should be possible without interrupting the cluster operation
+    \item Added servers should not be allowed to be elected as leaders because they have not yet catched up on the data
+\end{itemize}
+
+The algorithm for cluster membership is not as fleshed out as the core algorithm and contains many recommendations and ideas how things could be done, and not 
+concrete explanations how something should be implemented. This requires some design decisions and experimentation from the programmer when creating a real-world implementation.
 
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
@@ -388,47 +419,17 @@ http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
 \subsection{Follower with incomplete data attempts to be elected leader}
 * check on lastLogINdex/lastLogTerm fails => reject vote
 
-\section{Client interaction}
-
-\subsection{Potential problems}
-* cluster/leader discovery
-* duplicate writes
-* stale reads
-
-\subsection{Inconsistens/stale reads}
-(adressed in paper)
-https://github.com/coreos/etcd/issues/741
-https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
-https://gist.github.com/armon/11059431
-
-\section{Cluster membership}
-Until now, the described algorithm uses a predefined cluster configuration with a given number of nodes. In a real-world system, it is desirable to
-be able to add and remove nodes from the cluster. A use-case for this is e.g. replacing nodes for software updates or hardware upgrades or to
-scale a cluster over more nodes for better performance.
-
-The PhD dissertation \cite{raft_phd_thesis} describes in detail how such cluster membership changes can be implemented.
-The algorithm is quite complex because it has to avoid certain failure cases when adding/removing cluster members:
-
-\begin{itemize}
-    \item Only adding one server at a time should be allowed to avoid two groups of nodes to be formed which would allow two leaders in the systems to be elected
-    \item Removing a leader should be possible without interrupting the cluster operation
-    \item Added servers should not be allowed to be elected as leaders because they have not yet catched up on the data
-\end{itemize}
-
-The algorithm for cluster membership is not as fleshed out as the core algorithm and contains many recommendations and ideas how things could be done, and not 
-concrete explanations how something should be implemented. This requires some design decisions and experimentation from the programmer when creating a real-world implementation.
-
 \section{Implementation}
-Two tries: C++ and Python
+Two attempts: C++ and Python
 Difficulties:
 Retrying requests/connects
+Network timeout
 Simple RPC Request/Response systems like GRPC do not handle timeouts/errors 
 Timer and request handling at the same time
 Async programming or threads
 State locking
 100% understanding of the paper is required
 Extremely difficult to test
-Missing/incomplete describition/extensions for cluster implementation
 
 \section{Conclusion}
 References the abstract
