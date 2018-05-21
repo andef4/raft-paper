@@ -416,42 +416,38 @@ RequestVote packets and gets elected as the new leader.
 Once again, the cluster starts up without an elected leader. This time, one of nodes is offline which will (with the right timing) provoke a split vote.
 }
 
-\raftscope{scenarios/split_votes/68.pdf_tex}{
-Node S1 and S2 time out at nearly the same time and send out RequestVote request. The picture shows the RequestVotre responses: S1 and S2 reject the vote for ea
+\raftscope{scenarios/split_votes/62.pdf_tex}{
+Node S1 and S2 time out at nearly the same time and send out RequestVote request.
 }
 
-\raftscope{scenarios/split_votes/116.pdf_tex}{
-TODO
+\raftscope{scenarios/split_votes/68.pdf_tex}{
+The picture shows the RequestVote responses: S1 and S2 reject the vote for each other, because they already voted for themselves in this term. S5 votes for S2 and S4 votes for S1.
 }
 
 \raftscope{scenarios/split_votes/126.pdf_tex}{
-TODO
+The two candidate nodes (S1, S2) now only have two votes each (the filled out black dots inside the blue circles) and therefore do not have a majority. In the meantime, the election timer of S4 run out and this node also switched into candidate mode and sends out RequestVote requests.
 }
 
 \raftscope{scenarios/split_votes/135.pdf_tex}{
-TODO
-}
-
-\raftscope{scenarios/split_votes/139.pdf_tex}{
-TODO
+Because the term of S4 is higher than that of the other nodes, all other nodes will vote for S4 and elect it as leader.
 }
 
 \subsection{Data write}
 
 \raftscopedata{scenarios/data_write/3.pdf_tex}{
-TODO send out data
+The leader receives new data from a client and writes it into its own log[], without updating his commitIndex. Next, the leader sents out AppendEntry messages with the new data.
 }
 
 \raftscopedata{scenarios/data_write/11.pdf_tex}{
-TODO reply with success
+The follower nodes write the data into their own log[]. This data is not yet considered committed. The node sends back a success AppendEntry message to the leader.
 }
 
 \raftscopedata{scenarios/data_write/29.pdf_tex}{
-TODO update commit index in next appendentry heartbeat
+The leader received enough AppendEntry responses from followers and increases his commitIndex to the newly written data (the line around the data cell is now solid). The leader sends out an AppendEntry heartbeat message with the updated commitIndex 
 }
 
 \raftscopedata{scenarios/data_write/34.pdf_tex}{
-TODO Tnodes update commit index
+The followers receive the heartbeat message and update their own commitIndex to the index from the master, sent in the leaderCommit field of the AppendEntry heartbeat.
 }
 
 \subsection{Network partition}
