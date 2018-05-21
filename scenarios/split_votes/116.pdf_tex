@@ -1,6 +1,6 @@
 %% Creator: Inkscape inkscape 0.91, www.inkscape.org
 %% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
-%% Accompanies image file '116.pdf' (pdf, eps, ps)
+%% Accompanies image file 'split_votes/116.pdf' (pdf, eps, ps)
 %%
 %% To include the image in your LaTeX document, write
 %%   \input{<filename>.pdf_tex}
@@ -49,21 +49,21 @@
   \global\let\svgscale\undefined%
   \makeatother%
   \begin{picture}(1,0.94207864)%
-    \put(0,0){\includegraphics[width=\unitlength,page=1]{116.pdf}}%
-    \put(0.50052837,0.91945567){\makebox(0,0)[b]{\smash{S1}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=2]{116.pdf}}%
-    \put(0.50052837,0.79244953){\makebox(0,0)[b]{\smash{2}}}%
-    \put(0.98368765,0.56841831){\makebox(0,0)[b]{\smash{S2}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=3]{116.pdf}}%
-    \put(0.86289717,0.52917342){\makebox(0,0)[b]{\smash{2}}}%
-    \put(0.79913759,0.00043162){\makebox(0,0)[b]{\smash{S3}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=4]{116.pdf}}%
-    \put(0.72448591,0.10317962){\makebox(0,0)[b]{\smash{1}}}%
-    \put(0.20191916,0.00043162){\makebox(0,0)[b]{\smash{S4}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=5]{116.pdf}}%
-    \put(0.27657083,0.10317962){\makebox(0,0)[b]{\smash{2}}}%
-    \put(0.01736908,0.56841831){\makebox(0,0)[b]{\smash{S5}}}%
-    \put(0,0){\includegraphics[width=\unitlength,page=6]{116.pdf}}%
-    \put(0.13815955,0.52917342){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{split_votes/116.pdf}}%
+    \put(0.50052837,0.89945567){\makebox(0,0)[b]{\smash{S1}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{split_votes/116.pdf}}%
+    \put(0.50052837,0.77244953){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.98368765,0.54841831){\makebox(0,0)[b]{\smash{S2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{split_votes/116.pdf}}%
+    \put(0.86289717,0.50917342){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.79913759,-0.0195684){\makebox(0,0)[b]{\smash{S3}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{split_votes/116.pdf}}%
+    \put(0.72448591,0.08317962){\makebox(0,0)[b]{\smash{1}}}%
+    \put(0.20191916,-0.0195684){\makebox(0,0)[b]{\smash{S4}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{split_votes/116.pdf}}%
+    \put(0.27657083,0.08317962){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.01736908,0.54841831){\makebox(0,0)[b]{\smash{S5}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{split_votes/116.pdf}}%
+    \put(0.13815955,0.50917342){\makebox(0,0)[b]{\smash{2}}}%
   \end{picture}%
 \endgroup%
