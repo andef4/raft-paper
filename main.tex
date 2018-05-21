@@ -483,14 +483,20 @@ The followers receive the heartbeat message and update their own commitIndex to 
 
 \section{Implementation}
 
-Two attempts: C++ and Python
-Difficulties:
-Retrying requests/connects
-Network timeout
-Timer and request handling at the same time
-Async programming or threads
-State locking
-Extremely difficult to test
+The author of this paper implemented the core Raft algorithm (communication inside the cluster) in Python. The main challenges were not implementing the algorithm logic itself, but all the challenges around network and system programming:
+\begin{itemize}
+    \item Correctly handling timeouts and retrying requests
+    \item Multithreaded progamming with sockets and timers
+    \item Locking of the state between threads
+\end{itemize}
+
+At least for the core algorithm, Raft is very well described and was not the main challenge to implement the software.
+Other parts like the client interaction and cluster membership are described in lesser detail and would require more design decissions by the programmer
+in comparison to the core algorithm, which can be written up more or less directly from the paper
+
+Another challenge that applied to all network based system programming is testing. It is extremely difficult to reliably test such systems, because simulating errors like
+delayed or lost packets, node downtime or network partitions is hard. There are approaches to simulate the complete system to validate a distributed systems,
+which are very complex to build and slow to execute, but can guarantee a very high level of correctness\cite{foundationdb_testing}.
 
 \section{Conclusion}
 Today, there are multiple real-world implementations of distributed systems using the Raft algorithm, proving that one of the main goals of Raft have been accomplished.
