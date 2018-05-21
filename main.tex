@@ -413,11 +413,11 @@ RequestVote packets and gets elected as the new leader.
 \subsection{Split vote}
 
 \raftscope{scenarios/split_votes/53.pdf_tex}{
-TODO
+Once again, the cluster starts up without an elected leader. This time, one of nodes is offline which will (with the right timing) provoke a split vote.
 }
 
 \raftscope{scenarios/split_votes/68.pdf_tex}{
-TODO
+Node S1 and S2 time out at nearly the same time and send out RequestVote request. The picture shows the RequestVotre responses: S1 and S2 reject the vote for ea
 }
 
 \raftscope{scenarios/split_votes/116.pdf_tex}{
