@@ -362,6 +362,21 @@ The small circles are the cluster nodes. The number inside the circle is the cur
 
 \subsection{Startup and leader election}
 
+
+
+
+
+\newcommand{\raftscope}[2]{
+  \begin{tabularx}{\textwidth}{  p{150px}  X  }
+    \noindent\parbox[c]{\hsize}{
+      \def\svgwidth{150}
+      \input{scenarios/election/40.pdf_tex}
+    } & On cluster start up, there is no leader and all nodes are in the follower state.
+\end{tabularx}
+}
+
+
+
 \begin{tabularx}{\textwidth}{  p{150px}  X  }
   \noindent\parbox[c]{\hsize}{
   \def\svgwidth{150}
