@@ -355,6 +355,12 @@ A duplicate write can happen when a majority of the followers acknowledge the wr
 
 For real-world implementations, it is important to remove sessions from clients which are not active any more, to avoid running out of memory. There are different approaches how to implement this, some are described in the PhD thesis\cite{raft_phd_thesis}, chapter 6.3.
 
+\subsection{Inconsistens/stale reads}
+(adressed in paper)
+https://github.com/coreos/etcd/issues/741
+https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
+https://gist.github.com/armon/11059431
+
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
 
@@ -430,33 +436,37 @@ Writing data into the cluster uses the same message as the heartbeat.
 * nodes update commit index
 
 \subsection{Network partition}
-* split into 2/3 nodes with two masters
 
 
-\subsection{Follower with old data reconnects to the cluster}
-* receives heartbeat message
-* prevLogIndex is more recent that lastApplied => reply with success=false to heartbeat message
-* leader sends appendEntry with lower index until it finds an index replicated by this node
-* leader will then send out appendEntries requests until the node has again all the data (probably in one packet if AppendEntry can contain multiple entries)
 
-\subsection{Follower with incomplete data attempts to be elected leader}
-* check on lastLogINdex/lastLogTerm fails => reject vote
+\begin{tabularx}{\textwidth}{ |X|X| }
+  \hline
+  \includegraphics[scale=0.3]{scenarios/network_partition/0380.png} &
+  \includegraphics[scale=0.3]{scenarios/network_partition/0749.png} \\
+  1. Initially, the cluster has one elected master and 5 working nodes. A network partition is introduced between the mast  &
+  2. TODO 2  \\
+  \hline
+  \includegraphics[scale=0.3]{scenarios/network_partition/1183.png} &
+  \includegraphics[scale=0.3]{scenarios/network_partition/1656.png} \\
+  3) TODO 1  &
+  4) TODO 2  \\
+  \hline
+\end{tabularx}
 
-\subsection{Old leader returns}
-=> Steps down as soon as they see a heartbeat packet from the current master with a newer term.
-The node is a follower now and does the same as in the section above to regain all the missing data.
-* deleted old uncommited data
+\begin{tabularx}{\textwidth}{ |X|X| }
+  \hline
+  \includegraphics[scale=0.3]{scenarios/network_partition/1830.png} &
+  \includegraphics[scale=0.3]{scenarios/network_partition/1859.png} \\
+  5) TODO 1  &
+  6) TODO 2  \\
+  \hline
+  \includegraphics[scale=0.3]{scenarios/network_partition/2163.png} &
+  \includegraphics[scale=0.3]{scenarios/network_partition/2200.png} \\
+  TODO 1  &
+  TODO 2  \\
+  \hline
+\end{tabularx}
 
-\subsection{Switching masters in network partition}
-When connection between two nodes fail, a ping-pong between these two nodes *can* happen.
-
-http://openlife.cc/system/files/4-modifications-for-Raft-consensus.pdf
-
-\subsection{Inconsistens/stale reads}
-(adressed in paper)
-https://github.com/coreos/etcd/issues/741
-https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
-https://gist.github.com/armon/11059431
 
 \section{Implementation}
 
