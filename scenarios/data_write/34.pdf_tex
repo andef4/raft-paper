@@ -1,0 +1,99 @@
+%% Creator: Inkscape inkscape 0.91, www.inkscape.org
+%% PDF/EPS/PS + LaTeX output extension by Johan Engelen, 2010
+%% Accompanies image file 'data_write/34.pdf' (pdf, eps, ps)
+%%
+%% To include the image in your LaTeX document, write
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics{<filename>.pdf}
+%% To scale the image, write
+%%   \def\svgwidth{<desired width>}
+%%   \input{<filename>.pdf_tex}
+%%  instead of
+%%   \includegraphics[width=<desired width>]{<filename>.pdf}
+%%
+%% Images with a different path to the parent latex file can
+%% be accessed with the `import' package (which may need to be
+%% installed) using
+%%   \usepackage{import}
+%% in the preamble, and then including the image with
+%%   \import{<path to file>}{<filename>.pdf_tex}
+%% Alternatively, one can specify
+%%   \graphicspath{{<path to file>/}}
+%% 
+%% For more information, please see info/svg-inkscape on CTAN:
+%%   http://tug.ctan.org/tex-archive/info/svg-inkscape
+%%
+\begingroup%
+  \makeatletter%
+  \providecommand\color[2][]{%
+    \errmessage{(Inkscape) Color is used for the text in Inkscape, but the package 'color.sty' is not loaded}%
+    \renewcommand\color[2][]{}%
+  }%
+  \providecommand\transparent[1]{%
+    \errmessage{(Inkscape) Transparency is used (non-zero) for the text in Inkscape, but the package 'transparent.sty' is not loaded}%
+    \renewcommand\transparent[1]{}%
+  }%
+  \providecommand\rotatebox[2]{#2}%
+  \ifx\svgwidth\undefined%
+    \setlength{\unitlength}{589.63911285bp}%
+    \ifx\svgscale\undefined%
+      \relax%
+    \else%
+      \setlength{\unitlength}{\unitlength * \real{\svgscale}}%
+    \fi%
+  \else%
+    \setlength{\unitlength}{\svgwidth}%
+  \fi%
+  \global\let\svgwidth\undefined%
+  \global\let\svgscale\undefined%
+  \makeatother%
+  \begin{picture}(1,0.50319482)%
+    \put(0,0){\includegraphics[width=\unitlength,page=1]{data_write/34.pdf}}%
+    \put(0.26734847,0.481111  ){\makebox(0,0)[b]{\smash{S1}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=2]{data_write/34.pdf}}%
+    \put(0.26734847,0.413273  ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.52541954,0.293611  ){\makebox(0,0)[b]{\smash{S2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=3]{data_write/34.pdf}}%
+    \put(0.46090142,0.272649  ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.42684536,-0.009769 ){\color[rgb]{1,0,0}\makebox(0,0)[b]{\smash{S3}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=4]{data_write/34.pdf}}%
+    \put(0.38697147,0.045112  ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.10785159,-0.009769 ){\makebox(0,0)[b]{\smash{S4}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=5]{data_write/34.pdf}}%
+    \put(0.14772547,0.045112  ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.00927739,0.293611  ){\makebox(0,0)[b]{\smash{S5}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=6]{data_write/34.pdf}}%
+    \put(0.0737955,0.272649  ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=7]{data_write/34.pdf}}%
+    \put(0.63922475,0.404681  ){\makebox(0,0)[b]{\smash{1}}}%
+    \put(0.67474751,0.404681  ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.71027026,0.404681  ){\makebox(0,0)[b]{\smash{3}}}%
+    \put(0.74579161,0.404681  ){\makebox(0,0)[b]{\smash{4}}}%
+    \put(0.78131436,0.404681  ){\makebox(0,0)[b]{\smash{5}}}%
+    \put(0.81683712,0.404681  ){\makebox(0,0)[b]{\smash{6}}}%
+    \put(0.85235987,0.404681  ){\makebox(0,0)[b]{\smash{7}}}%
+    \put(0.88788263,0.404681  ){\makebox(0,0)[b]{\smash{8}}}%
+    \put(0.92340397,0.404681  ){\makebox(0,0)[b]{\smash{9}}}%
+    \put(0.95892673,0.404681  ){\makebox(0,0)[b]{\smash{10}}}%
+    \put(0.59432813,0.359681  ){\makebox(0,0)[b]{\smash{S1}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=8]{data_write/34.pdf}}%
+    \put(0.63922475,0.359681  ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=9]{data_write/34.pdf}}%
+    \put(0.59432813,0.293200 ){\makebox(0,0)[b]{\smash{S2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=10]{data_write/34.pdf}}%
+    \put(0.63922475,0.293200 ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=11]{data_write/34.pdf}}%
+    \put(0.59432813,0.226718  ){\color[rgb]{1,0,0}\makebox(0,0)[b]{\smash{S3}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=12]{data_write/34.pdf}}%
+    \put(0.63922475,0.226718  ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0.59432813,0.160237  ){\makebox(0,0)[b]{\smash{S4}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=13]{data_write/34.pdf}}%
+    \put(0.63922475,0.160237  ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=14]{data_write/34.pdf}}%
+    \put(0.59432813,0.093756  ){\makebox(0,0)[b]{\smash{S5}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=15]{data_write/34.pdf}}%
+    \put(0.63922475,0.093756  ){\makebox(0,0)[b]{\smash{2}}}%
+    \put(0,0){\includegraphics[width=\unitlength,page=16]{data_write/34.pdf}}%
+  \end{picture}%
+\endgroup%

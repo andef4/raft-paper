@@ -376,6 +376,16 @@ The small circles are the cluster nodes. The number inside the circle is the cur
 \end{tabularx}
 }
 
+\newcommand{\raftscopedata}[2]{
+  \begin{tabularx}{\textwidth}{  p{250px}  X  }
+    \noindent\parbox[c]{\hsize}{
+      \def\svgwidth{250}
+      \fontsize{9pt}{11pt}\selectfont
+      \input{#1}
+    } & #2
+\end{tabularx}
+}
+
 \subsection{Startup and leader election}
 
 
@@ -429,41 +439,50 @@ TODO
 }
 
 \subsection{Data write}
-Writing data into the cluster uses the same message as the heartbeat.
-* send out data
-* reply with success
-* update commit index in next appendentry heartbeat
-* nodes update commit index
+
+\raftscopedata{scenarios/data_write/3.pdf_tex}{
+TODO send out data
+}
+
+\raftscopedata{scenarios/data_write/11.pdf_tex}{
+TODO reply with success
+}
+
+\raftscopedata{scenarios/data_write/29.pdf_tex}{
+TODO update commit index in next appendentry heartbeat
+}
+
+\raftscopedata{scenarios/data_write/34.pdf_tex}{
+TODO Tnodes update commit index
+}
 
 \subsection{Network partition}
 
-
-
 \begin{tabularx}{\textwidth}{ |X|X| }
   \hline
-  \includegraphics[scale=0.3]{scenarios/network_partition/0380.png} &
-  \includegraphics[scale=0.3]{scenarios/network_partition/0749.png} \\
-  1. Initially, the cluster has one elected master and 5 working nodes. A network partition is introduced between the mast  &
-  2. TODO 2  \\
+  \includegraphics[scale=0.28]{scenarios/network_partition/0380.png} &
+  \includegraphics[scale=0.28]{scenarios/network_partition/0749.png} \\
+  1. Initially, the cluster has one elected leader and 5 working nodes. A network partition is introduced between the nodes A,B and the three other nodes.  &
+  2. Because the nodes C, D and E do not receive heartbeats, they elect node D as their new leader \\
   \hline
-  \includegraphics[scale=0.3]{scenarios/network_partition/1183.png} &
-  \includegraphics[scale=0.3]{scenarios/network_partition/1656.png} \\
-  3) TODO 1  &
-  4) TODO 2  \\
+  \includegraphics[scale=0.28]{scenarios/network_partition/1183.png} &
+  \includegraphics[scale=0.28]{scenarios/network_partition/1656.png} \\
+  3. A client connected to the A/B partition tries to insert some data into the cluster.  &
+  4. Because the leader does not find a majority for the change, the change can never be committed (the text in the diagram stays red).  \\
   \hline
 \end{tabularx}
 
 \begin{tabularx}{\textwidth}{ |X|X| }
   \hline
-  \includegraphics[scale=0.3]{scenarios/network_partition/1830.png} &
-  \includegraphics[scale=0.3]{scenarios/network_partition/1859.png} \\
-  5) TODO 1  &
-  6) TODO 2  \\
+  \includegraphics[scale=0.28]{scenarios/network_partition/1830.png} &
+  \includegraphics[scale=0.28]{scenarios/network_partition/1859.png} \\
+  5. A client connected to the other network partition inserts data into the cluster. The leader successfully receives two acknowledges from other nodes and marks the new data as commited.  &
+  6. The leader sends back a message to the client to signal that the data has been added successfully. \\
   \hline
-  \includegraphics[scale=0.3]{scenarios/network_partition/2163.png} &
-  \includegraphics[scale=0.3]{scenarios/network_partition/2200.png} \\
-  TODO 1  &
-  TODO 2  \\
+  \includegraphics[scale=0.28]{scenarios/network_partition/2163.png} &
+  \includegraphics[scale=0.28]{scenarios/network_partition/2200.png} \\
+  7. The network partition is resolved. Both leaders send out heartbeat messages to all nodes. &
+  8. The old leader (Node B) will step down, because the term of the new leader is higher. The new leader will also send out the new data received from the second client. Node A and B will discard they uncommited data and replace it with the data received from the new leader.\\
   \hline
 \end{tabularx}
 
