@@ -47,7 +47,7 @@
 
 \section{Abstract}
 
-Raft is a consensus algorithm for distributed systems. It aims to be easier to understand and implemented in real-world software than Paxos, an older and wildy used algorithm.
+Raft is a consensus algorithm for distributed systems. It aims to be easier to understand and implemented in real-world software than Paxos, an older and widely used algorithm.
 
 This paper explains the algorithm from the bottom up, first describing all the components and
 then explaining how they work together to solve specific scenarios.
@@ -61,14 +61,14 @@ comparison to the original paper and PhD thesis.
 
 This paper covers Raft, a consensus algorithm for distributed systems.
 
-Raft wants to be a simpler replacement for PAXOS, an algorithm developed by Leslie Lamport and considered the reference consensus algorithm for distributed systems\cite{paxos}. PAXOS suffers from two big problems, which Raft tries to solve: It is hard to understand \cite[p.91]{raft_phd_thesis}, has some missing pieces for a real world system and is generally hard to implement\cite{paxos_made_live}.
+Raft wants to be a simpler replacement for Paxos, an algorithm developed by Leslie Lamport and considered the reference consensus algorithm for distributed systems\cite{paxos}. PAXOS suffers from two big problems, which Raft tries to solve: It is hard to understand \cite[p.91]{raft_phd_thesis}, has some missing pieces for a real world system and is generally hard to implement\cite{paxos_made_live}.
 
-Raft was developed by Diego Ongaro and extensively described in this PhD thesis \cite{raft_phd_thesis}. He not only describes how the algorithm works, but also did a study under students to test if the algorithm is actually easier to understand than PAXOS. Raft has been formally verified \cite{raft_proof} and implemented in multiple real world systems, e.g. in etcd \cite{etcd_raft}, Consul \cite{consul_raft} and RethinkDB \cite{rethinkdb_raft}.
+Raft was developed by Diego Ongaro and his colleagues at Stanford university and extensively described in this PhD thesis \cite{raft_phd_thesis}. He not only describes how the algorithm works, but also did a study under students to test if the algorithm is actually easier to understand than PAXOS. Raft has been formally verified \cite{raft_proof} and implemented in multiple real world systems, e.g. in etcd \cite{etcd_raft}, Consul \cite{consul_raft} and RethinkDB \cite{rethinkdb_raft}.
 
-The offical GitHub Page \cite{raft_github} contains many further references about the algorithm, a simulator for the algorithm from which screenshots have been used in this paper and an extensive list of implementations in many different programming languages.
+The official GitHub Page \cite{raft_github} contains many further references about the algorithm, a simulator for the algorithm from which screenshots have been used in this paper and an extensive list of implementations in many different programming languages.
 
 This paper has three main parts: The first part explains what consensus in a distributed system means, the second part explains how the Raft algorithm works in detail and the third part shows how the algorithm reacts to some specific scenarios.
-The pictures for the scenarios sections were created using Raftscope \cite{raftscope}, a software to visualize the state of Raft-based distributed system.
+The pictures for the scenarios sections were created using Raftscope\cite{raftscope}, a software to visualize the state of Raft-based distributed system.
 
 This paper describes the latest version of Raft as described in Diego Ongaros PhD dissertation \cite{raft_phd_thesis}. Compared to the papers published before the dissertation, the dissertation describes the client-cluster interaction much more clearly and contains a simpler cluster membership change algorithm.
 
@@ -85,11 +85,11 @@ Many consensus algorithms (including Raft) are based on a majority system. If a 
 \subsection{The CAP Theorem}
 The CAP theorem describe how certain failures in a distributed system affect the system. It states that a distributed system can never provide more than two of the following guarantees: \cite{cap_theorem}
 
-\textbf{Consistency}: Operations in the system must appear as if they happened one after another in total order. At a specific time all servers must return the same, most recent write to the system.
-
-\textbf{Availability}: Every working node in the system must be able to return a response to a request.
-
-\textbf{Partition tolerance}: The system works even when the network drops packets, loses nodes or is partitioned.
+\begin{itemize}
+  \item \textbf{Consistency}: Operations in the system must appear as if they happened one after another in total order. At a specific time all servers must return the same, most recent write to the system.
+  \item \textbf{Availability}: Every working node in the system must be able to return a response to a request.
+  \item \textbf{Partition tolerance}: The system works even when the network drops packets, loses nodes or is partitioned.
+\end{itemize}
 
 Raft is a CP algorithm, that means systems using this algorithm are tolerant to partitions and always return a consistent view of the data in the system. Raft sacrifices the availability guarantee, which means that at least a majority of the servers must be working and be able to communicate with each other for the system to be usable.
 
@@ -103,7 +103,7 @@ This is availability guarantee of the CAP theorem the Raft algorithm gives up fo
 
 Every leader is elected for a specific term. A term is a positive integer, incremented every time a node starts an election process by proposing itself as a new leader to the other nodes.
 
-The current leader sends out a heartbeat network packet in some preconfigured interval. If a follower node does not receive a heartbeat within a given interval (which should be a bit longer than the interval in which the master sends out the heartbeats to account for the network round-trip time), the node considers the master to be down and proposes itself as a new leader.
+The current leader sends out a heartbeat network packet in some preset interval. If a follower node does not receive a heartbeat within a given interval (which should be a bit longer than the interval in which the leader sends out the heartbeats to account for the network round-trip time), the node considers the leader to be down and proposes itself as a new leader.
 
 The main data structure of the algorithm as a replicated, append-only log. It contains the data the clients wants to save in the system and also some metadata
 for the algorithm itself.
@@ -125,22 +125,24 @@ Every node in the Raft cluster is always in one of the following three states:
 
 \subsubsection*{Persistent data written to disk}
 
-This data has to be saved on disk before replying to the RPC call from the leader. The fsync or equivalent system call should be used on the file descriptor to make sure the data has arrived on the disk and not just the write caches of the operating system [CN].
+This data has to be saved on disk before replying to the RPC call from the leader. The fsync or equivalent system call should be used on the file descriptor to make sure the data has arrived on the disk and not just the write caches of the operating system.
 
-\begin{tabular}{ | l | p{13.7cm} | }
+\begin{tabularx}{\textwidth}{ | p{80px} | X | }
 \hline
+\textbf{Property} & \textbf{Description} \\ \hline
 currentTerm & The election term the node thinks is the current one \\ \hline
 votedFor & For which node the current node has voted in this term \\ \hline
 log[] & The replicated log containing all the data clients want to save in the system. The log is append only, only new entries can be append but old ones can not be changed.
 Every log entry contains an index (starting at one) and the term in which the data was written. \\ \hline
-\end{tabular}
+\end{tabularx}
 
 \subsubsection*{Volatile data}
 
 This data is not written to disk and initialized on node startup.
 
-\begin{tabularx}{\textwidth}{  | p{80px} | X | }
+\begin{tabularx}{\textwidth}{ | p{80px} | X | }
 \hline
+\textbf{Property} & \textbf{Description} \\ \hline
 commitIndex & Up to which index in the replicated log the current node considers to be committed (commited means a majority of the cluster
 received the data entry, saved it to disk and notified the leader). On startup, this information is initialized from the leaders heartbeat message (AppendEntry). \\
 \hline
@@ -155,12 +157,13 @@ receivedVotes[] & Vote responses per node id, a vote could be granted or rejecte
 This data is initialized when the node gets elected as leader and is not persisted to disk.
 It has to be cleared every time the node gets elected and must not be reused in later terms.
 
-\begin{tabular}{ | l | p{13.7cm} | }
+\begin{tabularx}{\textwidth}{ | p{80px} | X | }
 \hline
+\textbf{Property} & \textbf{Description} \\ \hline
 nextIndex[] & Index of the next entry the leader will send to the specific follower. This map/associative array is initialized to the leaders last log entry index + 1 on leader election.
 This map is used when a followers log falls behind the leaders log and the leader starts to send missing log entries to the follower. \\ \hline
 matchIndex[] & Index of the latest acknowledged (written to disk) log entry for the specific follower. Initialized to zero on leader election. \\ \hline
-\end{tabular}
+\end{tabularx}
 
 \subsection{Timers}
 The Raft server needs two timers which when they run out trigger some action.
@@ -194,10 +197,10 @@ The communication between cluster nodes uses a remote procedure call (RPC) syste
 
 Clients interacting with the cluster add additional RPC calls and some optional extensions (like cluster membership) can also add additional calls.
 
-The first message pair is RequestVote which is used in the voting process. The request is sent out ony by nodes in candidate state.
-The second pair is AppendEntries which is sent out by the master as a heartbeat message and also to append data to the distrbuted log[] data structure.
+The first message pair is RequestVote which is used in the voting process. The request is sent out only by nodes in candidate state.
+The second pair is AppendEntries which is sent out by the leader as a heartbeat message and also to append data to the distributed log[] data structure.
 
-\subsubsection*{RequestVote RPC call}
+\subsection{RequestVote RPC call}
 The RequestVote RPC call is used in the election process. When the election timer of a node expires, the node will do the following things:
 
 \begin{itemize}
@@ -208,25 +211,27 @@ The RequestVote RPC call is used in the election process. When the election time
     \item Send out RequestVote requests to all other nodes
 \end{itemize}
 
-\textbf{Request}
+\subsubsection*{Request}
 
-\begin{tabular}{ | l | p{13.7cm} | }
+\begin{tabularx}{\textwidth}{ | p{80px} | X | }
 \hline
+\textbf{Field} & \textbf{Description} \\ \hline
 term & Current term of the candidate \\ \hline
 candidateId & Node id of the candidate \\ \hline
 lastLogIndex & Index of the last applied log entry (could be uncommitted) \\ \hline
 lastLogTerm & Term of the last applied log entry (could be uncommitted) \\ \hline
-\end{tabular}
+\end{tabularx}
 
-\textbf{Response}
+\subsubsection*{Response}
 
-\begin{tabular}{ | l | p{13.7cm} | }
+\begin{tabularx}{\textwidth}{ | p{80px} | X | }
 \hline
+\textbf{Field} & \textbf{Description} \\ \hline
 term & The current term the answering node is in \\ \hline
 voteGranted & If the answering node votes for the requesting node \\ \hline
-\end{tabular}
+\end{tabularx}
 
-\textbf{Request handling}
+\subsubsection*{Request handling}
 
 The first thing a node receiving a RequestVote request does is comparing its own term with the term in the request. If the term in the request is smaller than its own, it will reject to vote for this node by sending back a response with its current term and voteGranted flag set to false. The lower term value in the request is an indicator that the node sending the request is not up to date with the cluster and should therefore not be elected as a leader.
 
@@ -239,7 +244,7 @@ The last check is if the lastLogIndex and lastLogTerm are the same or higher tha
 
 If the node responds with a successful vote (voteGranted is true), it will also reset its own election timer.
 
-\textbf{Candidate response handling}
+\subsubsection*{Candidate response handling}
 
 If the term received in the response is higher than its own term, the node will switch to follower mode and therefore gives up to become a leader in the current term.
 
@@ -247,41 +252,43 @@ If the node does not receive enough votes (because more than half of the nodes a
 
 The candidate tracks its received vote answers in the receivedVotes[] associative array/map. This array
 saves if a node in the cluster voted for or against election the candidate as a new leader. If
-the candidate receives enough notes, it switches to leader state and starts to send out hearbeat messages. This array is also used to resend RequestVote requests to nodes which did not respond in time,
+the candidate receives enough notes, it switches to leader state and starts to send out heartbeat messages. This array is also used to resend RequestVote requests to nodes which did not respond in time,
 which is measured using the candidate timer described above.
 
-\subsubsection*{AppendEntries RPC call}
-The AppendEntries RPC call is used by the master as a heartbeat message and also for
+\subsection{AppendEntries RPC call}
+The AppendEntries RPC call is used by the leader as a heartbeat message and also for
 inserting data into the cluster log. It receives new data from a client and sends it out
 to all followers. If enough followers acknowledge that they received the data, the leader
 considers the data as committed and will signal to all followers in the next AppendEntry request 
 that they should also consider the data committed.
 
-\textbf{Request}
+\subsubsection*{Request}
 
-\begin{tabular}{ | l | p{12.7cm} | }
+\begin{tabularx}{\textwidth}{ | p{80px} | X | }
 \hline
+\textbf{Field} & \textbf{Description} \\ \hline
 term & The leaders currentTerm \\ \hline
 leaderId & The node id of the leader \\ \hline
 prevLogIndex & Index of the log entry directly before the new ones in entries[] \\ \hline
 prevLogTerm & Election term of the log entry directly before the new ones in entries[] \\ \hline
 entires[] & The new data to be appended to the log, blank in heartbeat messages \\ \hline
 leaderCommit & The commitIndex of the leader \\ \hline
-\end{tabular}
+\end{tabularx}
 
-\textbf{Response}
+\subsubsection*{Response}
 
-\begin{tabular}{ | l | p{13.7cm} | }
+\begin{tabularx}{\textwidth}{ | p{80px} | X | }
 \hline
+\textbf{Field} & \textbf{Description} \\ \hline
 term & The responding nodes currentTerm \\ \hline
 success & If the request succeeded \\ \hline
-\end{tabular}
+\end{tabularx}
 
-\textbf{Request sending}
+\subsubsection*{Request sending}
 
 The leader sends out AppendEntries when the heartbeat timer runs out or when a client sends new data. In both cases the request to the followers is constructed in the same way. When the request is sent out because the leader received new data from a client, it first appends the new data to its own log[]. Next, it starts to build the request to all followers: The prevLogIndex field is set to the value in nextIndex[] array for the specific node minus one, prevLogTerm is set to the corresponding term of the log entry. The entries[] field is now filled up with data from the leaders[] log starting with the index in nextIndex[] for the node.
 
-\textbf{Request handling and response sending}
+\subsubsection*{Request handling and response sending}
 
 As in the VoteRequest request handling, the first action is to check if the term of the
 leader in the request is smaller than currentTerm of the current node. If yes, a response with success
@@ -297,7 +304,7 @@ own log. These entries are not committed yet, because it is possible that only a
 
 If the leader receives enough successful AppendEntry responses, it will increase its own commitIndex and send that out in the next AppendEntry request (heartbeat or with new data) in the leaderCommit field. When the checks above (term and prevLogIndex/prevLogTerm) are successful, the follower will set its own commitIndex to the one in leaderCommit.
 
-\textbf{Response handling}
+\subsubsection*{Response handling}
 
 If the term in the response is higher than the currentTerm of the leader, the leader steps down immediately. The higher term
 is an indicator that the leader is not up to date with the rest of the cluster.
@@ -307,7 +314,7 @@ the same value plus one in the nextIndex[] array.
 
 If enough nodes (the majority of the cluster including the leader) acknowledge the new data (can be checked using the matchIndex[] array), the leader will increase its commitIndex which will then be sent out to all nodes on the next AppendEntries request.
 
-\textbf{Log data catch up}
+\subsubsection*{Log data catch up}
 
 If success in the response of the AppendEntry request is false, the data of the follower is not up to date or contains invalid data. The leader will begin sending out AppendEntries requests with lowered prevLogIndex/prevLogTerm every time until the follower finds a log[] entry matching with them. After that, the leader will start sending out log entries until the follower has the exact same log as the leader. This process uses the nextIndex[] array on the leader.
 
@@ -326,7 +333,7 @@ The algorithm is quite complex because it has to avoid certain failure cases whe
 \begin{itemize}
     \item Only adding one server at a time should be allowed to avoid two groups of nodes to be formed which would allow two leaders in the systems to be elected
     \item Removing a leader should be possible without interrupting the cluster operation
-    \item Added servers should not be allowed to be elected as leaders because they have not yet catched up on the data
+    \item Added servers should not be allowed to be elected as leaders because they have not yet caught up on the data
 \end{itemize}
 
 The algorithm for cluster membership is not as fleshed out as the core algorithm and contains many recommendations and ideas how things could be done, and not 
@@ -341,7 +348,7 @@ Until now, we only describe how nodes inside the cluster communicate with each o
 The first challenge for the client is to find the cluster. When the cluster is static and does not support member changes (see next chapter), this can be done by simply hard-coding the IP addresses of the cluster members in the client configuration. Resolving IP addresses using the domain name system would also be a possibility. This approach can also be used with changing cluster memberships, by updating the DNS records on changes.
 
 \subsection{Leader discovery}
-Only the leader in a Raft cluster can actually add new data to the log[]. One solution for this problem is that every node which gets contacted by a client but is not a leader acts as a proxy for the client and routes the requests to the master. Another solution is responding with the node id of the current leader. The node id of the leader is sent to all followers in the AppendEntry heartbeat message and can be sent out to clients.
+Only the leader in a Raft cluster can actually add new data to the log[]. One solution for this problem is that every node which gets contacted by a client but is not a leader acts as a proxy for the client and routes the requests to the leader. Another solution is responding with the node id of the current leader. The node id of the leader is sent to all followers in the AppendEntry heartbeat message and can be sent out to clients.
 
 \subsection{Writing data}
 After finding the leader, a client sends data to leader. The leader adds the data to the Raft log and replicates the data to the cluster by sending out AppendEntries messages. Only when the leader receives an successful answer from a majority of the nodes in the cluster, it returns a success response message to the client.
@@ -352,12 +359,6 @@ Another guarantee the Raft algorithm tries to make is linearizability, which mea
 A duplicate write can happen when a majority of the followers acknowledge the write, but the leader never sends back a success response message, because the leader crashed or the network between the client and the leader stopped to work.
 
 For real-world implementations, it is important to remove sessions from clients which are not active any more, to avoid running out of memory. There are different approaches how to implement this, some are described in the PhD thesis\cite{raft_phd_thesis}, chapter 6.3.
-
-\subsection{Inconsistens/stale reads}
-(adressed in paper)
-https://github.com/coreos/etcd/issues/741
-https://aphyr.com/posts/316-call-me-maybe-etcd-and-consul
-https://gist.github.com/armon/11059431
 
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
@@ -447,7 +448,7 @@ The leader received enough AppendEntry responses from followers and increases hi
 }
 
 \raftscopedata{scenarios/data_write/34.pdf_tex}{
-The followers receive the heartbeat message and update their own commitIndex to the index from the master, sent in the leaderCommit field of the AppendEntry heartbeat.
+The followers receive the heartbeat message and update their own commitIndex to the index from the leader, sent in the leaderCommit field of the AppendEntry heartbeat.
 }
 
 \subsection{Network partition}
@@ -486,7 +487,7 @@ The followers receive the heartbeat message and update their own commitIndex to 
 The author of this paper implemented the core Raft algorithm (communication inside the cluster) in Python. The main challenges were not implementing the algorithm logic itself, but all the challenges around network and system programming:
 \begin{itemize}
     \item Correctly handling timeouts and retrying requests
-    \item Multithreaded progamming with sockets and timers
+    \item Multithreaded programming with sockets and timers
     \item Locking of the state between threads
 \end{itemize}
 
@@ -498,6 +499,13 @@ Another challenge that applied to all network based system programming is testin
 delayed or lost packets, node downtime or network partitions is hard. There are approaches to simulate the complete system to validate a distributed systems,
 which are very complex to build and slow to execute, but can guarantee a very high level of correctness\cite{foundationdb_testing}.
 
+An example for a problem showing up in a real-world implementation which is very find and check for is inconsistent/stale reads. As shown in the "Network partition" scenario above, a Raft cluster can have two active leaders.
+It is possible that a client on the majority part of the network updates a value in the Raft log. At the same time a client reading from the other partition can read the old value.
+A fix for this problem is that the leader has to wait for a majority of the nodes to acknowledge the leaders heartbeat request, before the leader answers the client. This of course
+a big performance degradation for something that happens so seldom. The problem showed up both in etcd and Consul \cite{aphyr_call_me_maybe}, and was solved by providing a flag on the
+request which can be set if this problem has to be avoided at all cost \cite{etcd_consistency} \cite{consul_consistency}.
+
+
 \section{Conclusion}
 Today, there are multiple real-world implementations of distributed systems using the Raft algorithm, proving that one of the main goals of Raft have been accomplished.
 
@@ -506,7 +514,7 @@ Both systems are CP systems as described in the Raft paper.
 
 Many newer databases from the NoSQL movement are also using the Raft algorithm, including MongoDB \cite{mongodb_raft}, CockroachDB\cite{cockroachdb_raft} and RethinkDB\cite{rethinkdb_raft}. For performance reasons, some of these databases use Raft for coordination inside the cluster, but not for the actual data replication\cite[Development section]{rethinkdb_raft_metadata}.
 
-Diego Ongaro did a user study for his PhD thesis to prove that the algorithm is easier to understand than Paxos \cite[Raft user study chapter]{raft_phd_thesis}. The author of this paper also thinks that the algorithm is understandable, but by no means simple. Besides the original paper and the PhD thesis, the visualization Raftscope \cite{raftscope} and The Secret Lives of Data \cite{the_secret_lives_of_data} helper quite a bit, as did the source code of LogCabin\cite{logcabin}, the Raft implementation Ongaro wrote for his thesis.
+Diego Ongaro did a user study for his PhD thesis to prove that the algorithm is easier to understand than Paxos \cite[Raft user study chapter]{raft_phd_thesis}. The author of this paper also thinks that the algorithm is understandable, but by no means simple. Besides the original paper and the PhD thesis, the visualization Raftscope \cite{raftscope} and The Secret Lives of Data \cite{the_secret_lives_of_data} helped quite a bit, as did the source code of LogCabin\cite{logcabin}, the Raft implementation Ongaro wrote for his thesis.
 
 \bibliographystyle{plain}
 \bibliography{bibliography} 
