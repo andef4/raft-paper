@@ -360,50 +360,35 @@ This section takes a look on different scenarios and failure modes in the cluste
 
 The small circles are the cluster nodes. The number inside the circle is the current term the node is in, the number outside the circle is the node id. The line around the circles show the election timer.
 
-\subsection{Startup and leader election}
-
-
-
-
-
 \newcommand{\raftscope}[2]{
-  \begin{tabularx}{\textwidth}{  p{150px}  X  }
+  \begin{tabularx}{\textwidth}{  p{120px}  X  }
     \noindent\parbox[c]{\hsize}{
-      \def\svgwidth{150}
-      \input{scenarios/election/40.pdf_tex}
-    } & On cluster start up, there is no leader and all nodes are in the follower state.
+      \def\svgwidth{120}
+      \input{#1}
+    } & #2
 \end{tabularx}
 }
 
+\subsection{Startup and leader election}
 
 
-\begin{tabularx}{\textwidth}{  p{150px}  X  }
-  \noindent\parbox[c]{\hsize}{
-  \def\svgwidth{150}
-  \input{scenarios/election/40.pdf_tex}
-  } & On cluster start up, there is no leader and all nodes are in the follower state.
-\end{tabularx}
+\raftscope{scenarios/election/40.pdf_tex}{
+On cluster start up, there is no leader and all nodes are in the follower state.
+}
 
-\begin{tabularx}{\textwidth}{  p{150px}  X  }
-  \noindent\parbox[c]{\hsize}{
-  \def\svgwidth{150}
-  \input{scenarios/election/60.pdf_tex}
-  } & After some time, one (or more, see split vote section below) nodes (S1) election timer will run out. The node will switch to candidate mode and send out RequestVote request messages (green points).
-\end{tabularx}
+\raftscope{scenarios/election/60.pdf_tex}{
+After some time, one (or more, see split vote section below) nodes (S1) election timer will run out.
+The node will switch to candidate mode and send out RequestVote request messages (green points)
+}
 
-\begin{tabularx}{\textwidth}{  p{150px}  X  }
-  \noindent\parbox[c]{\hsize}{
-  \def\svgwidth{150}
-  \input{scenarios/election/65.pdf_tex}
-  } & All followers vote for this candidate by sending back a successful RequestVote response.
-\end{tabularx}
+\raftscope{scenarios/election/65.pdf_tex}{
+All followers vote for this candidate by sending back a successful RequestVote response.
+}
 
-\begin{tabularx}{\textwidth}{  p{150px}  X  }
-  \noindent\parbox[c]{\hsize}{
-  \def\svgwidth{150}
-  \input{scenarios/election/72.pdf_tex}
-  } & The node S1 is now elected as leader and starts to send out AppendEntries heartbeat messages.
-\end{tabularx}
+\raftscope{scenarios/election/72.pdf_tex}{
+The node S1 is now elected as leader and starts to send out AppendEntries heartbeat messages.
+}
+
 
 \subsection{Leader crash}
 A leader crash is handled exactly like the initial leader election.
@@ -412,6 +397,16 @@ RequestVote packets and gets elected as the new leader.
 
 \subsection{Split vote}
 
+\raftscope{scenarios/split_votes/53.pdf_tex}{
+On cluster start up, there is no leader and all nodes are in the follower state.
+}
+
+\makebox(0,0)[b]{\smash{S1}}
+
+
+\raftscope{scenarios/split_votes/68.pdf_tex}{
+On cluster start up, there is no leader and all nodes are in the follower state.
+}
 
 \subsection{Data write}
 Writing data into the cluster uses the same message as the heartbeat.
