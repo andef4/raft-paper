@@ -56,7 +56,7 @@
     \put(0.98368765,0.56841831){\makebox(0,0)[b]{\smash{S2}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=3]{53.pdf}}%
     \put(0.86289717,0.52917342){\makebox(0,0)[b]{\smash{1}}}%
-    \put(0.79913759,0.00043162){\makebox(0,0)[b]{\smash{S3}}}%
+    \put(0.79913759,-0.050){\makebox(0,0)[b]{\smash{S3}}}%
     \put(0,0){\includegraphics[width=\unitlength,page=4]{53.pdf}}%
     \put(0.72448591,0.10317962){\makebox(0,0)[b]{\smash{1}}}%
     \put(0.20191916,0.00043162){\makebox(0,0)[b]{\smash{S4}}}%
