@@ -197,8 +197,9 @@ The communication between cluster nodes uses a remote procedure call (RPC) syste
 
 Clients interacting with the cluster add additional RPC calls and some optional extensions (like cluster membership) can also add additional calls.
 
-The first message pair is RequestVote which is used in the voting process. The request is sent out only by nodes in candidate state.
+The first message pair is RequestVote which is used in the leader election process. The request is sent out only by nodes in candidate state.
 The second pair is AppendEntries which is sent out by the leader as a heartbeat message and also to append data to the distributed log[] data structure.
+This message pair is used to get a consensus in the cluster. The consensus is the state of the log[] data structure saved on every node.
 
 \subsection{RequestVote RPC call}
 The RequestVote RPC call is used in the election process. When the election timer of a node expires, the node will do the following things:
