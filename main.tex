@@ -365,7 +365,7 @@ The first challenge for the client is to find the cluster. When the cluster is s
 Only the leader in a Raft cluster can actually add new data to the log[]. One solution for this problem is that every node which gets contacted by a client but is not a leader acts as a proxy for the client and routes the requests to the leader. Another solution is responding with the node id of the current leader. The node id of the leader is sent to all followers in the AppendEntry heartbeat message and can be sent out to clients.
 
 \subsection{Writing data}
-After finding the leader, a client sends data to leader. The leader adds the data to the Raft log and replicates the data to the cluster by sending out AppendEntries messages. Only when the leader receives an successful answer from a majority of the nodes in the cluster, it returns a success response message to the client.
+After finding the leader, a client sends data to leader. The leader adds the data to the Raft log and replicates the data to the cluster by sending out AppendEntries messages. Only when the leader receives an successful answer from a majority of the nodes in the cluster, it returns a success response message to the client confirming that the data has been committed.
 
 \subsection{Duplicate writes}
 Another guarantee the Raft algorithm tries to make is linearizability, which means a write of new data is executed exactly once. To implement this, a client registers with the cluster when first connecting. The cluster then creates a client session in memory. When the client sends a request to write some data, the request contains a unique request id. This request id is saved in the session. The session will be checked every time a new request from this client comes in to avoid duplicate writes from the same client by checking if the request id is already in the session.
@@ -377,7 +377,14 @@ For real-world implementations, it is important to remove sessions from clients 
 \section{Scenarios}
 This section takes a look on different scenarios and failure modes in the cluster and how Raft handles these cases.
 
-The small circles are the cluster nodes. The number inside the circle is the current term the node is in, the number outside the circle is the node id. The line around the circles show the election timer.
+The elements in the following diagrams are as follows:
+\begin{itemize}
+    \item Big grey circle: The cluster itself.
+    \item Smaller colored circles with numbers in it: Cluster nodes.
+    \item Number inside the circle: Current term of the node.
+    \item Number outside the circle starting with S: Node id.
+    \item Line around the circle: Election timer.
+\end{itemize}
 
 \newcommand{\raftscope}[2]{
   \begin{tabularx}{\textwidth}{  p{120px}  X  }
@@ -407,7 +414,7 @@ On cluster start up, there is no leader and all nodes are in the follower state.
 }
 
 \raftscope{scenarios/election/60.pdf_tex}{
-After some time, one (or more, see split vote section below) nodes (S1) election timer will run out.
+After some time, one (or more, see split vote section below) node's (S1) election timer will run out.
 The node will switch to candidate mode and send out RequestVote request messages (green points)
 }
 
@@ -428,7 +435,7 @@ RequestVote packets and gets elected as the new leader.
 \subsection{Split vote}
 
 \raftscope{scenarios/split_votes/53.pdf_tex}{
-Once again, the cluster starts up without an elected leader. This time, one of nodes is offline which will (with the right timing) provoke a split vote.
+Once again, the cluster starts up without an elected leader. This time, one of nodes is offline (S3, greyed out) which will (with the right timing) provoke a split vote.
 }
 
 \raftscope{scenarios/split_votes/62.pdf_tex}{
@@ -448,6 +455,7 @@ Because the term of S4 is higher than that of the other nodes, all other nodes w
 }
 
 \subsection{Data write}
+This scenario adds a new element to the diagrams: An illustration of the Raft log[] on every node. Every row represents the Raft log[] of the node. The cells are entries in the Raft log indexed at the top. A solid line around a cell means that the data inside the cell is considered committed by this node, which means the commitIndex property is the same or higher than the index of this item. A dotted line around the cell means the item has not been committed yet.
 
 \raftscopedata{scenarios/data_write/3.pdf_tex}{
 The leader receives new data from a client and writes it into its own log[], without updating his commitIndex. Next, the leader sents out AppendEntry messages with the new data.
@@ -513,11 +521,7 @@ Another challenge that applied to all network based system programming is testin
 delayed or lost packets, node downtime or network partitions is hard. There are approaches to simulate the complete system to validate a distributed systems,
 which are very complex to build and slow to execute, but can guarantee a very high level of correctness\cite{foundationdb_testing}.
 
-An example for a problem showing up in a real-world implementation which is very find and check for is inconsistent/stale reads. As shown in the "Network partition" scenario above, a Raft cluster can have two active leaders.
-It is possible that a client on the majority part of the network updates a value in the Raft log. At the same time a client reading from the other partition can read the old value.
-A fix for this problem is that the leader has to wait for a majority of the nodes to acknowledge the leaders heartbeat request, before the leader answers the client. This of course
-a big performance degradation for something that happens so seldom. The problem showed up both in etcd and Consul \cite{aphyr_call_me_maybe}, and was solved by providing a flag on the
-request which can be set if this problem has to be avoided at all cost \cite{etcd_consistency} \cite{consul_consistency}.
+An example for a problem showing up in a real-world implementations which is very hard to find and write tests for is inconsistent/stale reads. As shown in the "Network partition" scenario above, it is possible that a Raft cluster has two active leaders. If in this scenario a client on the majority part of the network updates a value in the Raft log, it is possible that a client reading from the other partition reads the old value. A fix for this problem is that the leader has to wait for a majority of the nodes to acknowledge the leaders heartbeat request, before the leader answers the client. This signals the leader that he is still a legitimate leader and that he is allowed to authoritatively answer the client's request.  This of course a big performance degradation for something that happens so seldom. The problem showed up both in etcd and Consul \cite{aphyr_call_me_maybe}, and was solved by providing a flag on the request which can be set if this problem has to be avoided at all cost \cite{etcd_consistency} \cite{consul_consistency}.
 
 
 \section{Conclusion}
