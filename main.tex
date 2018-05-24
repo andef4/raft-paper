@@ -156,7 +156,7 @@ This data is not written to disk and initialized on node startup.
 \hline
 \textbf{Property} & \textbf{Description} \\ \hline
 commitIndex & Up to which index in the replicated log the current node considers to be committed (commited means a majority of the cluster
-received the data entry, saved it to disk and notified the leader). On startup, this information is initialized from the leaders heartbeat message (AppendEntry). \\
+received the data entry, saved it to disk and notified the leader). On startup, this information is initialized from the leaders heartbeat message (AppendEntries). \\
 \hline
 lastApplied & The highest index in the replicated log, initialized when reading the log entries from disk on startup. \\
 \hline
@@ -273,7 +273,7 @@ The AppendEntries request and response messages are used to get a consensus insi
 The AppendEntries RPC request is used by the leader as a heartbeat message and also for
 inserting data into the cluster log. It receives new data from a client and sends it out
 to all followers. If enough followers acknowledge that they received the data, the leader
-considers the data as committed and will signal to all followers in the next AppendEntry request 
+considers the data as committed and will signal to all followers in the next AppendEntries request 
 that they should also consider the data committed.
 
 \subsubsection*{Request}
@@ -316,7 +316,7 @@ The leader will start to send the missing log entries (see "Log data catch up" s
 If the follower has the entries referenced in prevLogIndex and prevLogTerm, it will append the data in the entries[] field to his
 own log. These entries are not committed yet, because it is possible that only a minority of the nodes in the cluster has the new data.
 
-If the leader receives enough successful AppendEntry responses, it will increase its own commitIndex and send that out in the next AppendEntry request (heartbeat or with new data) in the leaderCommit field. When the checks above (term and prevLogIndex/prevLogTerm) are successful, the follower will set its own commitIndex to the one in leaderCommit.
+If the leader receives enough successful AppendEntries responses, it will increase its own commitIndex and send that out in the next AppendEntries request (heartbeat or with new data) in the leaderCommit field. When the checks above (term and prevLogIndex/prevLogTerm) are successful, the follower will set its own commitIndex to the one in leaderCommit.
 
 \subsubsection*{Response handling}
 
@@ -330,7 +330,7 @@ If enough nodes (the majority of the cluster including the leader) acknowledge t
 
 \subsubsection*{Log data catch up}
 
-If success in the response of the AppendEntry request is false, the data of the follower is not up to date or contains invalid data. The leader will begin sending out AppendEntries requests with lowered prevLogIndex/prevLogTerm every time until the follower finds a log[] entry matching with them. After that, the leader will start sending out log entries until the follower has the exact same log as the leader. This process uses the nextIndex[] array on the leader.
+If success in the response of the AppendEntries request is false, the data of the follower is not up to date or contains invalid data. The leader will begin sending out AppendEntries requests with lowered prevLogIndex/prevLogTerm every time until the follower finds a log[] entry matching with them. After that, the leader will start sending out log entries until the follower has the exact same log as the leader. This process uses the nextIndex[] array on the leader.
 
 
 
@@ -362,7 +362,7 @@ Until now, we only describe how nodes inside the cluster communicate with each o
 The first challenge for the client is to find the cluster. When the cluster is static and does not support member changes (see next chapter), this can be done by simply hard-coding the IP addresses of the cluster members in the client configuration. Resolving IP addresses using the domain name system would also be a possibility. This approach can also be used with changing cluster memberships, by updating the DNS records on changes.
 
 \subsection{Leader discovery}
-Only the leader in a Raft cluster can actually add new data to the log[]. One solution for this problem is that every node which gets contacted by a client but is not a leader acts as a proxy for the client and routes the requests to the leader. Another solution is responding with the node id of the current leader. The node id of the leader is sent to all followers in the AppendEntry heartbeat message and can be sent out to clients.
+Only the leader in a Raft cluster can actually add new data to the log[]. One solution for this problem is that every node which gets contacted by a client but is not a leader acts as a proxy for the client and routes the requests to the leader. Another solution is responding with the node id of the current leader. The node id of the leader is sent to all followers in the AppendEntries heartbeat message and can be sent out to clients.
 
 \subsection{Writing data}
 After finding the leader, a client sends data to leader. The leader adds the data to the Raft log and replicates the data to the cluster by sending out AppendEntries messages. Only when the leader receives an successful answer from a majority of the nodes in the cluster, it returns a success response message to the client confirming that the data has been committed.
@@ -386,17 +386,16 @@ The elements in the following diagrams are as follows:
     \item Line around the circle: Election timer.
 \end{itemize}
 
+
 \newcommand{\raftscope}[2]{
-  \begin{tabularx}{\textwidth}{  p{120px}  X  }
-    \noindent\parbox[c]{\hsize}{
-      \def\svgwidth{120}
-      \fontsize{9pt}{11pt}\selectfont
-      \input{#1}
-    } & #2
-\end{tabularx}
+\begin{tabular}{ p{125px}   m{11.5cm}  }
+\raisebox{-\totalheight+50px}{
+  \def\svgwidth{120}
+  \fontsize{9pt}{11pt}\selectfont
+  \input{#1}
+} & #2 
+\end{tabular}
 }
-
-
 
 \newcommand{\raftscopedata}[2]{
 \begin{tabular}{ p{250px}   p{7cm}  }
@@ -407,9 +406,6 @@ The elements in the following diagrams are as follows:
 } & #2 
 \end{tabular}
 }
-
-
-
 
 \subsection{Startup and leader election}
 
@@ -434,7 +430,7 @@ The node S1 is now elected as leader and starts to send out AppendEntries heartb
 
 \subsection{Leader crash}
 A leader crash is handled exactly like the initial leader election.
-After the leader crash, one of the follower nodes election timer will run out, because the node did not receive a heartbeat (AppendEntry) message from a leader. The node then sends out 
+After the leader crash, one of the follower nodes election timer will run out, because the node did not receive a heartbeat (AppendEntries) message from a leader. The node then sends out 
 RequestVote packets and gets elected as the new leader.
 
 \subsection{Split vote}
@@ -463,23 +459,23 @@ Because the term of S4 is higher than that of the other nodes, all other nodes w
 This scenario adds a new element to the diagrams: An illustration of the Raft log[] on every node. Every row represents the Raft log[] of the node. The cells are entries in the Raft log indexed at the top. A solid line around a cell means that the data inside the cell is considered committed by this node, which means the commitIndex property is the same or higher than the index of this item. A dotted line around the cell means the item has not been committed yet.
 
 \raftscopedata{scenarios/data_write/3.pdf_tex}{
-The leader receives new data from a client and writes it into its own log[], without updating his commitIndex. Next, the leader sents out AppendEntry messages with the new data.
+The leader receives new data from a client and writes it into its own log[], without updating his commitIndex. Next, the leader sents out AppendEntries messages with the new data.
 }
 
 \raftscopedata{scenarios/data_write/11.pdf_tex}{
-The follower nodes write the data into their own log[]. This data is not yet considered committed. The node sends back a success AppendEntry message to the leader.
+The follower nodes write the data into their own log[]. This data is not yet considered committed. The node sends back a success AppendEntries message to the leader.
 }
 
 \raftscopedata{scenarios/data_write/29.pdf_tex}{
-The leader received enough AppendEntry responses from followers and increases his commitIndex to the newly written data (the line around the data cell is now solid). The leader sends out an AppendEntry heartbeat message with the updated commitIndex 
+The leader received enough AppendEntries responses from followers and increases his commitIndex to the newly written data (the line around the data cell is now solid). The leader sends out an AppendEntries heartbeat message with the updated commitIndex 
 }
 
 \raftscopedata{scenarios/data_write/34.pdf_tex}{
-The followers receive the heartbeat message and update their own commitIndex to the index from the leader, sent in the leaderCommit field of the AppendEntry heartbeat.
+The followers receive the heartbeat message and update their own commitIndex to the index from the leader, sent in the leaderCommit field of the AppendEntries heartbeat.
 }
 
 \subsection{Network partition}
-
+In a network partition, nodes get split into two or more groups. Only nodes in the same group can communicate with each other. The Raft algorithm guarantees that only the group with the majority of the nodes is operable, meaning it is able to add new data to the Raft log[]. In the following scenario, the 5 nodes from before get split up in two groups. Two clients, one connected to each group then attempts to insert data into the log[].
 
 \raftscopedata{scenarios/network_partition/1.pdf_tex}{
 Initially, the cluster has one elected leader (S4) and 5 working nodes.
@@ -495,15 +491,15 @@ A client connected to the S3/S4 partition tries to insert some data into the clu
 which tries to send the changes to all nodes.
 }
 \raftscopedata{scenarios/network_partition/4.pdf_tex}{
-Only the S3 receives the AppendEntry request. It acknowledges the write with a successful AppendEntry response (orange circle with a + in it). Because the leader never finds a majority of node sacknowledging the change, the data write is never committed (the lines around the data entry in the log diagram stay dotted).
+Only the S3 receives the AppendEntries request. It acknowledges the write with a successful AppendEntries response (orange circle with a + in it). Because the leader never finds a majority of node sacknowledging the change, the data write is never committed (the lines around the data entry in the log diagram stay dotted).
 }
 
 \raftscopedata{scenarios/network_partition/5.pdf_tex}{
-A client connected to the other network partition inserts data into the cluster by sending it to the leader S1. The leader S1 sends out AppendEntry requests to all nodes.
+A client connected to the other network partition inserts data into the cluster by sending it to the leader S1. The leader S1 sends out AppendEntries requests to all nodes.
 }
 
 \raftscopedata{scenarios/network_partition/6.pdf_tex}{
-Nodes S2 and S5 acknowledge the write by sending back a successful AppendEntry response.
+Nodes S2 and S5 acknowledge the write by sending back a successful AppendEntries response.
 }
 
 \raftscopedata{scenarios/network_partition/7.pdf_tex}{
@@ -515,11 +511,14 @@ The nodes S2 and S5 receive the new commitIndex from the master and set their lo
 }
 
 \raftscopedata{scenarios/network_partition/9.pdf_tex}{
-The network partition is healed and all nodes can now talk to each other again. Both leaders send out heartbeat messages to all nodes.
+The network partition is healed and all nodes can now talk to each other again. Both leaders send out heartbeat (AppendEntries request) messages to all nodes.
+The message also contains the data written by the seconds client (the pink cell with the 3 in the diagram) for the nodes who do not have the data yet (S3, S4).
 }
 
 \raftscopedata{scenarios/network_partition/10.pdf_tex}{
-The old leader (Node B) will step down, because the term of the new leader is higher. The new leader will also send out the new data received from the second client. Node A and B will discard they uncommited data and replace it with the data received from the new leader
+The leader S2 receives the heartbeat message from S1 and steps down, because the term in the message is higher than his own. 
+Because the heartbeat message already contains data, the nodes S3 and S4 can discard the old uncommitted data with the same index and override
+it with the new data from the message.
 }
 
 \section{Implementation}
