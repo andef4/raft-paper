@@ -396,15 +396,20 @@ The elements in the following diagrams are as follows:
 \end{tabularx}
 }
 
+
+
 \newcommand{\raftscopedata}[2]{
-  \begin{tabularx}{\textwidth}{  p{250px}  X  }
-    \noindent\parbox[c]{\hsize}{
-      \def\svgwidth{250}
-      \fontsize{9pt}{11pt}\selectfont
-      \input{#1}
-    } & #2
-\end{tabularx}
+\begin{tabular}{ p{250px}   p{7cm}  }
+\raisebox{-\totalheight+25px}{
+  \def\svgwidth{250}
+  \fontsize{9pt}{11pt}\selectfont
+  \input{#1}
+} & #2 
+\end{tabular}
 }
+
+
+
 
 \subsection{Startup and leader election}
 
@@ -475,34 +480,47 @@ The followers receive the heartbeat message and update their own commitIndex to 
 
 \subsection{Network partition}
 
-\begin{tabularx}{\textwidth}{ |X|X| }
-  \hline
-  \includegraphics[scale=0.28]{scenarios/network_partition/0380.png} &
-  \includegraphics[scale=0.28]{scenarios/network_partition/0749.png} \\
-  1. Initially, the cluster has one elected leader and 5 working nodes. A network partition is introduced between the nodes A,B and the three other nodes.  &
-  2. Because the nodes C, D and E do not receive heartbeats, they elect node D as their new leader \\
-  \hline
-  \includegraphics[scale=0.28]{scenarios/network_partition/1183.png} &
-  \includegraphics[scale=0.28]{scenarios/network_partition/1656.png} \\
-  3. A client connected to the A/B partition tries to insert some data into the cluster.  &
-  4. Because the leader does not find a majority for the change, the change can never be committed (the text in the diagram stays red).  \\
-  \hline
-\end{tabularx}
 
-\begin{tabularx}{\textwidth}{ |X|X| }
-  \hline
-  \includegraphics[scale=0.28]{scenarios/network_partition/1830.png} &
-  \includegraphics[scale=0.28]{scenarios/network_partition/1859.png} \\
-  5. A client connected to the other network partition inserts data into the cluster. The leader successfully receives two acknowledges from other nodes and marks the new data as commited.  &
-  6. The leader sends back a message to the client to signal that the data has been added successfully. \\
-  \hline
-  \includegraphics[scale=0.28]{scenarios/network_partition/2163.png} &
-  \includegraphics[scale=0.28]{scenarios/network_partition/2200.png} \\
-  7. The network partition is resolved. Both leaders send out heartbeat messages to all nodes. &
-  8. The old leader (Node B) will step down, because the term of the new leader is higher. The new leader will also send out the new data received from the second client. Node A and B will discard they uncommited data and replace it with the data received from the new leader.\\
-  \hline
-\end{tabularx}
+\raftscopedata{scenarios/network_partition/1.pdf_tex}{
+Initially, the cluster has one elected leader (S4) and 5 working nodes.
+}
 
+\raftscopedata{scenarios/network_partition/2.pdf_tex}{
+A network partition is introduced between the nodes S1, S2 and S5 and the nodes S4 and S3.
+Because the nodes S1, S2 and S5 do not receive heartbeats from the now cut off leader S4, they elect S1 as their new leader
+}
+
+\raftscopedata{scenarios/network_partition/3.pdf_tex}{
+A client connected to the S3/S4 partition tries to insert some data into the cluster. Is sends its data to the leader,
+which tries to send the changes to all nodes.
+}
+\raftscopedata{scenarios/network_partition/4.pdf_tex}{
+Only the S3 receives the AppendEntry request. It acknowledges the write with a successful AppendEntry response (orange circle with a + in it). Because the leader never finds a majority of node sacknowledging the change, the data write is never committed (the lines around the data entry in the log diagram stay dotted).
+}
+
+\raftscopedata{scenarios/network_partition/5.pdf_tex}{
+A client connected to the other network partition inserts data into the cluster by sending it to the leader S1. The leader S1 sends out AppendEntry requests to all nodes.
+}
+
+\raftscopedata{scenarios/network_partition/6.pdf_tex}{
+Nodes S2 and S5 acknowledge the write by sending back a successful AppendEntry response.
+}
+
+\raftscopedata{scenarios/network_partition/7.pdf_tex}{
+The master receives the two acknowledgements of the writes and has therefore a majority for the change. It marks the change as committed by increasing its own commitIndex property (the line around the log entry is now solid). The master also sends out his new commitIndex as leaderIndex in the next heartbeat.
+}
+
+\raftscopedata{scenarios/network_partition/8.pdf_tex}{
+The nodes S2 and S5 receive the new commitIndex from the master and set their local commitIndex to this new value.
+}
+
+\raftscopedata{scenarios/network_partition/9.pdf_tex}{
+The network partition is healed and all nodes can now talk to each other again. Both leaders send out heartbeat messages to all nodes.
+}
+
+\raftscopedata{scenarios/network_partition/10.pdf_tex}{
+The old leader (Node B) will step down, because the term of the new leader is higher. The new leader will also send out the new data received from the second client. Node A and B will discard they uncommited data and replace it with the data received from the new leader
+}
 
 \section{Implementation}
 
