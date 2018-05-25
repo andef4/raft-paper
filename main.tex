@@ -28,7 +28,7 @@
 \vfill
 }
 
-\textsf{2017-12-04}}
+\textsf{2018-05-25}}
 \end{flushleft}
 \end{titlepage}
 \restoregeometry
@@ -463,7 +463,7 @@ The leader receives new data from a client and writes it into its own log[], wit
 }
 
 \raftscopedata{scenarios/data_write/11.pdf_tex}{
-The follower nodes write the data into their own log[]. This data is not yet considered committed. The node sends back a success AppendEntries message to the leader.
+The follower nodes write the data into their own log[]. This data is not yet considered committed. The follower nodes send back a success AppendEntries message to the leader.
 }
 
 \raftscopedata{scenarios/data_write/29.pdf_tex}{
@@ -487,8 +487,8 @@ Because the nodes S1, S2 and S5 do not receive heartbeats from the now cut off l
 }
 
 \raftscopedata{scenarios/network_partition/3.pdf_tex}{
-A client connected to the S3/S4 partition tries to insert some data into the cluster. Is sends its data to the leader,
-which tries to send the changes to all nodes.
+A client connected to the S3/S4 partition attempts to insert some data into the cluster. Is sends its data to the leader,
+which attempts to send the changes to all nodes.
 }
 \raftscopedata{scenarios/network_partition/4.pdf_tex}{
 Only the S3 receives the AppendEntries request. It acknowledges the write with a successful AppendEntries response (orange circle with a + in it). Because the leader never finds a majority of node sacknowledging the change, the data write is never committed (the lines around the data entry in the log diagram stay dotted).
@@ -516,8 +516,7 @@ The message also contains the data written by the seconds client (the pink cell 
 }
 
 \raftscopedata{scenarios/network_partition/10.pdf_tex}{
-The leader S2 receives the heartbeat message from S1 and steps down, because the term in the message is higher than his own. 
-Because the heartbeat message already contains data, the nodes S3 and S4 can discard the old uncommitted data with the same index and override
+The leader S2 receives the heartbeat message from S1 and steps down, because the term in the message is higher than his own. Because the heartbeat message already contains data, the nodes S3 and S4 can discard the old uncommitted data with the same index and override
 it with the new data from the message.
 }
 
@@ -544,12 +543,12 @@ An example for a problem showing up in a real-world implementations which is ver
 \section{Conclusion}
 Today, there are multiple real-world implementations of distributed systems using the Raft algorithm, proving that one of the main goals of Raft have been accomplished.
 
-Kubernetes, a container management system initially developed by Google and now having a broad support in the IT community uses etcd, a key-value store written in Go and implementing the Raft algorithm, as its only database. Consul, a similar service to etcd can be used as a replacement in Kubernetes. Consul also uses the Raft algorithm.
+Kubernetes, a container management system initially developed by Google and now having a broad support in the IT community uses etcd, a key-value store written in Go and implementing the Raft algorithm, as its only database. Consul, a similar service like etcd can be used as a replacement in Kubernetes. Consul also uses the Raft algorithm.
 Both systems are CP systems as described in the Raft paper.
 
 Many newer databases from the NoSQL movement are also using the Raft algorithm, including MongoDB \cite{mongodb_raft}, CockroachDB\cite{cockroachdb_raft} and RethinkDB\cite{rethinkdb_raft}. For performance reasons, some of these databases use Raft for coordination inside the cluster, but not for the actual data replication\cite[Development section]{rethinkdb_raft_metadata}.
 
-Diego Ongaro did a user study for his PhD thesis to prove that the algorithm is easier to understand than Paxos \cite[Raft user study chapter]{raft_phd_thesis}. The author of this paper also thinks that the algorithm is understandable, but by no means simple. Besides the original paper and the PhD thesis, the visualization Raftscope \cite{raftscope} and The Secret Lives of Data \cite{the_secret_lives_of_data} helped quite a bit, as did the source code of LogCabin\cite{logcabin}, the Raft implementation Ongaro wrote for his thesis.
+Diego Ongaro did a user study for his PhD thesis to prove that the algorithm is easier to understand than Paxos \cite[Raft user study chapter]{raft_phd_thesis}. The author of this paper also thinks that the algorithm is understandable, but by no means simple. Besides the original paper and the PhD thesis, the visualization Raftscope \cite{raftscope} and The Secret Lives of Data \cite{the_secret_lives_of_data} helped to understand the algorithm, as did the source code of LogCabin\cite{logcabin}, the Raft implementation Ongaro wrote for his thesis.
 
 \bibliographystyle{plain}
 \bibliography{bibliography} 
